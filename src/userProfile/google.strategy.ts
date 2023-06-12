@@ -29,7 +29,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       if(user){
         user.FirstName = name.givenName;
         user.LastName = name.familyName;
-        user.picture = photos[0].value;
+        user.Picture = photos[0].value;
         user.accessToken = accessToken;
         user.refreshToken = refreshToken;
       }
@@ -38,7 +38,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         user.Email = emails[0].value;
         user.FirstName = name.givenName;
         user.LastName = name.familyName;
-        user.picture = photos[0].value;
+        user.Picture = photos[0].value;
         user.accessToken = accessToken;
         user.refreshToken = refreshToken;
         const savedUser= await this.UserRepository.save(user)

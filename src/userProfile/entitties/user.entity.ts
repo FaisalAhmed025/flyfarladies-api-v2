@@ -40,9 +40,8 @@ export class User{
    @IsNotEmpty()
    @Column({nullable:true})
    NameTitle:string
-   @IsNotEmpty()
    @Column()
-   picture:string
+   Picture:string
    @Column({nullable:true})
    accessToken:string
    @Column({nullable:true})

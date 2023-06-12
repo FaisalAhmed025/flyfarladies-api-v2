@@ -7,4 +7,5 @@ export class CreateUserDto{
    Password:string
    jwtToken:string
    CreatedAt:Date
+   Picture:string
 }
