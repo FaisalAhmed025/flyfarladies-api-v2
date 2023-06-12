@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "fly-far-int-386004",
+  "private_key_id": "c46674d0b3aba69dd556c72658b7f0ed501b9ebe",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC2WFab9PNyM+1+\nD5Strrw1MroMOBKCJlG9M0ekeO0qhatiEQFC/3F4hDpym1c5fAvqtZHKMaOlaRJK\n0phkALFL5P+JzZjpXcv18BCHjmeFVi1bjccZ2XRzaXW8VUAMzsivv9avspEhH4dd\n5R+ORXYj+IXLJ0HfVvenAigbGwDEFTAGl0n2myHqP5kpIYUEOpEC5U4ZrYY1MI2c\nvAoeA4eP+7nhlhbjcbGtGys+gglC6AQy3ngk8qeZY2+JCV5pgkZw6KR3ZwCMiAqK\n3DyEwla0XSHyI86h8m5ZFGuLG6V7RVsQRCMqV3l+WYaCI4KGsX6NZgRASTriXveu\nF3tF/CEpAgMBAAECggEAAKXXXO4lr+9Y9dHcBIfyjuUovbgJ8iDCY+qFjniILdap\nZrZKa7CuTbAj6Fn+mSuEe/zRe/HpiRdn+LsUeS/QHBsVVf8p1BPAu0Ad7EAIbx6r\nbOqtMpLQCURD0Puj4sfDSm3jNzQ/tBSWwwci3GWzxz9FSRT7yhgsK2bkZJWXzu/b\ndGkcAMBstWsStvKA7rSg4Hw9Ojyq1nMCsQnMbxjmXvzlEH9dBnNcdfMW2cYDCbc3\ntbJweojS+f4u8IxugYlIbJPO6etUPpanYcBOtemK+nlQ1wm7n58Rt4io4A7BKca7\nlLjvQTMoVaThlCdsxOYEOnekDrsa2hovJmRp0QdlzwKBgQDyN4ruF5uuBI31bmY+\n3wId+F2B3uDJert4UDOE0nuPVIZubUMVSNPL6Gnrw0pzaOiSPH4iD5i4Q874OpXI\nHohn7hU8yJuD8VIlvDoawr/GKD5+MxpDaNmOZPpYXuAZwLtE6ZQFIcj/TbZFSXT3\nWYAvVkH3mBcl0AUJ5d+eEvXCiwKBgQDAuJ8NxrSME2E641szOU+hpRDRYwwPPu49\nYISz9HyknEnOmK/jkn7XrtSmzUfrLdQY0EeWbs+Rtij4+b+TZWmx86KrmgD/uHWD\nmx2AQaPC7C+FHvrjta2rEHVAA2iQ02R+eDeQarES3ziKqnnaKwvJdfS+XfvuuloE\nmrPgvpvlmwKBgQCa8FCckNly7VLphl89JGY0SaV2590exLWa9qKd+g4z1zvO83GP\n8fAZZWgr+dZsENWEhdGhdBya8jU4sDETvARBhxhqs2BXfEyx+r+oUp9d4GxpScMp\nD67q2UkSsk3j61dfc5LN3Zi3RzyrAZwihUvr+99ixBU6iOBQPo1WjoZKlQKBgFxr\n7XMI2OrYHGfGQqVVFbg6Vc9khZMGJfBvShSW6fNzM/4MwUUMqyG6KSb5CUVii/V+\nZOZiq86AIjQMaXBBUSfS5C8RQutfxZNgnwwz7ln7NGrNyZnMNcX0tZYGTG4vwmDY\nPCVY1SRswkvVp2wV+qgZlk54+empmqPcoOjl4BODAoGAXWb/SId+NSfF1JBkKqJe\ngyUtWGnyj/xrWlpMI2FYcPX9XKW6BrEIpGbivP8MypPmmdJgirZyQrHoQqDrVnub\nCslqtVkIAK4SJ8vYgpui9oamygzaQccR3jr2rOoxF5WztMwJdNoda/OQYPdPZAyP\n/Hkf5pDTbn8bxvBWJ14D8go=\n-----END PRIVATE KEY-----\n",
+  "client_email": "fly-far-int-386004@appspot.gserviceaccount.com",
+  "client_id": "112759018417828950175",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/fly-far-int-386004%40appspot.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
