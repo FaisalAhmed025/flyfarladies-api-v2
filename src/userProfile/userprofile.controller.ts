@@ -3,7 +3,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundExcep
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
-import { Equal, Repository, getRepository } from "typeorm";;
+import { Equal, Repository, } from "typeorm";;
 import { GCSStorageService } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user.dto";
 import { User } from "./entitties/user.entity";
