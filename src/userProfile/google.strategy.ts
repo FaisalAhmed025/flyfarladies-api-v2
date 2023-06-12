@@ -9,10 +9,10 @@ import { User } from './entitties/user.entity';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(  @InjectRepository(User) private UserRepository: Repository<User>, ) {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientID: '132894799803-cn8hbopt3pledla0dnd6ag9i4s0s5cj2.apps.googleusercontent.com',
+      clientSecret: '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',
       // callbackURL: 'http://localhost:3000/auth/google-redirect',
-      callbackURL: process.env.GOOGLE_OAUTH_REDIRECT,
+      callbackURL:'https://flyfarladies-apiv2.appspot.com//api/oauth/google' ,
       scope: ['email', 'profile'],
     });
   }
