@@ -1,5 +1,4 @@
 
-
-googleclientId: '524280881989-82ss5gqsrqf78da5d0c919ar1m4iui03.apps.googleusercontent.com'
-ClientSecret:  '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'
-googleredirectUrl: 'https://fly-far-int-386004.appspot.com/api/oauth/google'
+googleclientId: '132894799803-cn8hbopt3pledla0dnd6ag9i4s0s5cj2.apps.googleusercontent.com'
+ClientSecret:  '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'
+googleredirectUrl: 'https://flyfarladies-apiv2.appspot.com//api/oauth/google'
