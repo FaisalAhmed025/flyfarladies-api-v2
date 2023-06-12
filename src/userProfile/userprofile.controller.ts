@@ -46,7 +46,7 @@ export class userProfileController {
     private s3service: GCSStorageService,
   ) {}
   @ApiTags('User Auth Module')
-  @Post()
+  @Post('register')
   async Register(
     @Body() userDto: CreateUserDto,
     @Req() req: Request,
