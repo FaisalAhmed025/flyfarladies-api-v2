@@ -51,10 +51,10 @@ import { AskQuestion } from './askquestion/Entity/askquestion.entity';
       host: "flyfarint.com",
       database:"flyfarin_fflv2",
 
-      // username:process.env.LOCAL_USERNAME,
-      // password: process.env.LOCAL_PASSWORD,
-      // host : process.env.LOCAL_HOST,
-      // database:process.env.LOCAL_DATABASE,
+      // username:'root',
+      // password:'',
+      // host: '127.0.0.1',
+      // database:'flyfarladies',
 
       port:3306,
       entities: [Admin,

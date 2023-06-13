@@ -60,6 +60,24 @@ export class UserServices {
           pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
+
+    var currentDate = new Date();
+
+// Get the day, month, and year components
+    var day = currentDate.getDate();
+    var month = currentDate.toLocaleString('default', { month: 'long' });
+    var year = currentDate.getFullYear();
+
+    var hours = currentDate.getHours();
+    var minutes = currentDate.getMinutes();
+    // Determine if it's AM or PM
+    var amOrPm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Handle midnight (0 hours)
+
+    var formattedDate = month + ' ' + day + ', ' + year + ' ' + hours + ':' + minutes  + ' ' + amOrPm;
     
   
       // Compose the email message
@@ -164,7 +182,7 @@ export class UserServices {
                         padding: 0px 40px 20px 55px;
                       "
                     >
-                      ${userdto.CreatedAt}
+                      ${formattedDate}
                     </td>
                   </tr>
                 </table>
