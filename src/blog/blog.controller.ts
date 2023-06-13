@@ -23,7 +23,7 @@ export class BlogController {
     private s3service: GCSStorageService,
   ) {}
 
-  @Post()
+  @Post('addblog')
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'blogimages', maxCount: 10 }]),
   )
@@ -58,7 +58,7 @@ export class BlogController {
       .send({ status: 'success', message: 'blog created successfully' });
   }
 
-  @Post('presscoverage')
+  @Post('AddpressCoverage')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'Image', maxCount: 2 }]))
   async AddPressCoverage(
     @UploadedFiles()
@@ -85,7 +85,7 @@ export class BlogController {
       });
   }
 
-  @Get('presscoverage')
+  @Get('allpressoverages')
   async findAllpress() {
     return await this.PressCoveragesrepo.find({});
   }
