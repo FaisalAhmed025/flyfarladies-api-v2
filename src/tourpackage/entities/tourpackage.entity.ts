@@ -89,7 +89,7 @@ export class Tourpackage {
     tourpackageplans:Promise<tourpackageplan[]> ;
     @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true} )
     installments:Promise <Installment[]>;
-    @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
+    @OneToMany(() => Booking, (booking) => booking.tourPackage)
     bookings:Promise<Booking[]>;
     
     
