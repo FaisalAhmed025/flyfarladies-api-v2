@@ -202,7 +202,7 @@ export class userProfileController {
     return res.status(HttpStatus.OK).json({ logos });
   }
 
-  @Post(':id/addtraveler')
+  @Post(':uuid/addtraveler')
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'passportphotoUrl', maxCount: 2 }]),
   )
@@ -372,16 +372,17 @@ export class userProfileController {
   }
 
   @Get(':uuid/mytraveler')
-  async GetTravler(@Param('uuid') uuid: string, @Res() res: Response) {
-    const Profile = await this.UserRepository.findOne({ where: { uuid } });
-    if (!Profile) {
-      throw new HttpException('Profile not found', HttpStatus.BAD_REQUEST);
+  async getMyTravelers(@Param('uuid') uuid: string, @Res() res: Response) {
+    const user = await this.UserRepository.findOne({ where: { uuid }});
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
-    const mytravlerbuddy = await this.TravellerRepository.find({where:{}, relations:['user']});
-    return res.status(HttpStatus.OK).json({ mytravlerbuddy });
+    const User = await this.UserRepository.find({ where: {uuid}, relations:['travelers'] });
+    return res.status(HttpStatus.OK).json({ User });
   }
 
-  // // get user dashbboard
+
+
   @Get(':id')
   async UserDashboard(@Param('id') id: string, @Res() res: Response) {
     const dashboard = await this.UserServices.FindProfile(id);
