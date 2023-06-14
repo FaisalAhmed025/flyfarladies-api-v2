@@ -69,8 +69,8 @@ export class BookingService {
       newTraveler.Nationality =Nationality
       newTraveler.Gender =Gender
       newTraveler.DOB =DOB
-      newTraveler.PassportNumber =PassportNumber
       newTraveler.PassportExpireDate =PassportExpireDate
+      newTraveler.PassportNumber =PassportNumber
       newTraveler.Price = Price ? Price : tourPackage.Price;
       await this.travelerRepository.save(newTraveler)
       arrayoftravlers.push(newTraveler)

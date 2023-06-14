@@ -40,7 +40,7 @@ export class Traveller {
    @Column({default:null})
    PassportNumber:string
    @Column({default:null})
-   PassportExpireDate:string
+   PassportExpireDate:Date
    @Column({default:null})
    PaxType:string
    @Column({default:null})

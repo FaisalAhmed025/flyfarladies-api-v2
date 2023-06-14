@@ -55,7 +55,7 @@ export class Booking{
    }
    @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.HOLD })
    status: BookingStatus;
-   @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)
+   @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings,)
    tourPackage: Tourpackage;
    @ManyToMany(() => Traveller)
    @JoinTable({name: 'Traveler_bookings'})

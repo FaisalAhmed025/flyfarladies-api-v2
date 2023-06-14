@@ -8,7 +8,7 @@ export class CreateTravellerDto{
    Email:string
    Gender:string
    PassportNumber:string
-   PassportExpireDate:string
+   PassportExpireDate:Date
    PassportCopyURL:string
    Nationality:string
    Price:number

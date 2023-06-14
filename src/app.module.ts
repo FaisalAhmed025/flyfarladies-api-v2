@@ -85,7 +85,7 @@ import { AskQuestion } from './askquestion/Entity/askquestion.entity';
         socialimageenity,
         AskQuestion
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
