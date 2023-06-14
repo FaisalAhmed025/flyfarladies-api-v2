@@ -24,34 +24,24 @@ export class Tourpackage {
        userCount++;
        this.Id = `FFLPK${100 + userCount}`;
     }
-    @IsNotEmpty({message:'Main title could not be empty'})
     @Column({ nullable: true })
     MainTitle: string;
-    @IsNotEmpty({message:'SubTitle could not be empty'})
     @Column({ nullable: true })
     SubTitle: string;
-    @IsNotEmpty({message:'Price could not be empty'})
     @Column({ nullable: true })
     Price: number;
-    @IsNotEmpty({message:'Location could not be empty'})
     @Column({ nullable: true })
     Location: string;
-    @IsNotEmpty({message:'City could not be empty'})
     @Column({ nullable: true })
     City: string
-    @IsNotEmpty({message:'Discount could not be empty'})
     @Column({ nullable: true })
     Discount: number
-    @IsNotEmpty({message:'StartDate could not be empty'})
     @Column({default:null,type:'date' })
     StartDate: Date;
-    @IsNotEmpty({message:'EndDate could not be empty'})
     @Column({default:null,type:'date' })
     EndDate: Date;
-    @IsNotEmpty({message:'TripType could not be empty'})
     @Column({ nullable: true })
     TripType: string;
-    @IsNotEmpty({message:'Country could not be empty'})
     @Column({ nullable: true })
     Country: string;
     @Column({ default:0,type: 'integer'  })
@@ -60,10 +50,8 @@ export class Tourpackage {
     MinimumAge: number;
     @Column({ type: 'integer' })      
     MaximumAge: number;
-    @IsNotEmpty({message:'TotalDuration could not be empty'})
     @Column({ nullable: true })
     TotalDuration: string
-    @IsNotEmpty({message:'PackageOverview could not be empty'})
     @Column({ nullable: true,length: 1000 })
     PackageOverview: string;
     @Column('bool', { default: false, nullable: true })
@@ -81,7 +69,6 @@ export class Tourpackage {
     @IsNotEmpty({message:'coverimageurl could not be empty'})
     @Column({ nullable: true })
     coverimageurl: string
-
     @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage,{lazy:true} )
     mainimage:Promise<MainImage[]> ;
     @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,{lazy:true})
@@ -103,6 +90,7 @@ export class Tourpackage {
     @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true} )
     installments:Promise <Installment[]>;
     @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
-    bookings:Promise<Booking[]>; 
+    bookings:Promise<Booking[]>;
+    
     
 }

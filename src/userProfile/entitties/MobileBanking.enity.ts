@@ -49,7 +49,7 @@ export class MobileBanking{
    ActionBy:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
-   @ManyToOne(()=>User, (userprofile)=>userprofile.mobilebankDeposit)
+   @ManyToOne(()=>User, (userprofile)=>userprofile.mobilebankDeposit,{onDelete:'CASCADE'})
    @JoinColumn({name:'Mbank_Id',})
    userprofile:User
 }
