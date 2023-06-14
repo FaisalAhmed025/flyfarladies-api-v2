@@ -949,9 +949,6 @@ export class BookingService {
       
     }
 
-    
-
-
 
     async sendBookingApprovalToUser(booking: Booking) {
       const { Bookingid,TotalPrice, tourPackage, travelers } = booking;

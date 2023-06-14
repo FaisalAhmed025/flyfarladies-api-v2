@@ -377,7 +377,7 @@ export class userProfileController {
     if (!Profile) {
       throw new HttpException('Profile not found', HttpStatus.BAD_REQUEST);
     }
-    const mytravlerbuddy = await this.TravellerRepository.find({ where: {} });
+    const mytravlerbuddy = await this.TravellerRepository.find({where:{}, relations:['user']});
     return res.status(HttpStatus.OK).json({ mytravlerbuddy });
   }
 

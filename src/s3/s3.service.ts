@@ -33,7 +33,8 @@ export class GCSStorageService  {
             const bucketName = 'cdnflyfarladies'; // Replace with your actual bucket name
             const bucket = storage.bucket(bucketName);
             const fileName = `${file.originalname}.webp`;
-            const fileObject = bucket.file(fileName);
+            const modifiedName = fileName.replace(/\s+/g, '_');
+            const fileObject = bucket.file(modifiedName);
           
             try {
               const imageBuffer = await sharp(file.buffer).webp().toBuffer();
@@ -43,7 +44,7 @@ export class GCSStorageService  {
                 validation: 'md5',
               });
           
-              const fileUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+              const fileUrl = `https://storage.googleapis.com/${bucketName}/${modifiedName}`;
               console.log(`File uploaded successfully to ${fileUrl}`);
               return fileUrl;
             } catch (err) {
@@ -65,8 +66,10 @@ export class GCSStorageService  {
       const storage = new Storage({ keyFilename: serviceAccountKeyFile });
       const bucketName = 'cdnflyfarladies'; // Replace with your actual bucket name
       const bucket = storage.bucket(bucketName);
+     
       const fileName = `${file.originalname}.webp`;
-      const fileObject = bucket.file(fileName);
+      const modifiedName = fileName.replace(/\s+/g, '_');
+      const fileObject = bucket.file(modifiedName);
       try {
         const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         await fileObject.save(imageBuffer, {
@@ -74,7 +77,7 @@ export class GCSStorageService  {
           public: true,
           validation: 'md5',
         });
-        const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}new Date().getTime()`;
+        const imageUrl = `https://storage.googleapis.com/${bucketName}/${modifiedName}new Date().getTime()`;
         console.log(`File uploaded successfully to ${imageUrl}`);
         return imageUrl;
       } catch (err) {
