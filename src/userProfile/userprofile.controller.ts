@@ -225,9 +225,10 @@ export class userProfileController {
       PassportNumber,
       PassportExpireDate,
     } = req.body;
-    const Passportcopy = await this.s3service.Addimage(
-      file.passportphotoUrl[0],
-    );
+    let passportphotoUrl = null;
+    if (file.passportphotoUrl && file.passportphotoUrl.length > 0) {
+      passportphotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0]);
+    }
     const traveler = new Traveller();
     traveler.Title = Title;
     traveler.FirstName = FirstName;
@@ -238,7 +239,7 @@ export class userProfileController {
     traveler.DOB = DOB;
     traveler.PassportNumber = PassportNumber;
     traveler.PassportExpireDate = PassportExpireDate;
-    traveler.PassportCopyURL = Passportcopy;
+    traveler.PassportCopyURL = passportphotoUrl;
     traveler.user = user;
     await this.TravellerRepository.save({ ...traveler });
     return res
