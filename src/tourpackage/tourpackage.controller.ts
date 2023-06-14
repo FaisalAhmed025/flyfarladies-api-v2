@@ -169,7 +169,11 @@ export class TourpackageController {
   }
 
 
+
+  
   @Patch(':Id')
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'coverimageurl', maxCount: 2 }]))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -196,10 +200,17 @@ export class TourpackageController {
         AvailableSeats: { type: 'string' },
         MinimumAge: { type: 'number' },
         MaximumAge: { type: 'number' },
+        coverimageurl: {
+          type: 'string',
+          format: 'binary',
+        },
       },
     },
   })
   async updateTravelPackage(
+    @UploadedFiles() 
+    file: {
+      coverimageurl?: Express.Multer.File[]},
     @Req() req: Request,
     @Body() body,
     @Param('Id') Id: string,
@@ -228,8 +239,12 @@ export class TourpackageController {
       MinimumAge,
       MaximumAge,
     } = req.body;
-
+    let coverimageurl = null;
+    if (file.coverimageurl && file.coverimageurl.length > 0) {
+      coverimageurl = await this.s3service.Addimage(file.coverimageurl[0]);
+    }
     const tourpackage = await this.TourpackageRepo.findOne({where:{Id}});
+    tourpackage.coverimageurl = coverimageurl;
     tourpackage.MainTitle = MainTitle;
     tourpackage.SubTitle = SubTitle;
     tourpackage.Price = Price;
