@@ -34,7 +34,7 @@ export class BankTransfer{
    @Column()
    ChequeNumber:string
    @Column({type:'date'})
-   ChequeDate:string
+   ChequeDate:Date
    @CreateDateColumn()
    CreatedAt:Date
    @Column({nullable:true})
