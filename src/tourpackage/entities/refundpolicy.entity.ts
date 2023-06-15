@@ -9,6 +9,6 @@ export class refundpolicy {
     RId: number
     @Column({nullable:true,length: 1000})
     RefundPolicy:string
-    @ManyToOne(()=>Tourpackage,(tourpackages)=>tourpackages.refundpolicys,{onDelete:'CASCADE'})
+    @ManyToOne(()=>Tourpackage,(tourpackages)=>tourpackages.refundpolicys)
     tourpackage:Tourpackage;
 }

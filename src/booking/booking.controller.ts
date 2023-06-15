@@ -89,7 +89,6 @@ export class BookingController {
         queryBuilder.leftJoinAndSelect('booking.tourPackage', alias);
       }
     }
-
     const bookedPackages = await queryBuilder
       .where('booking.userid = :userid', { userid })
       .getMany();

@@ -11,7 +11,7 @@ export class packageexcluions {
   @IsNotEmpty()
   @Column({length: 1000})
   PackageExclusions: string;
-  @ManyToOne(() => Tourpackage, (tourpackages) => tourpackages.exclusions,{onDelete:'CASCADE'})
+  @ManyToOne(() => Tourpackage, (tourpackages) => tourpackages.exclusions)
   @JoinColumn({ name: 'exclsuionId' })
   tourpackage: Tourpackage
 

@@ -11,7 +11,7 @@ export class VisitedPlace{
    PlaceName:string
    @Column({default:true})
    VisitedImagePath: string;
-   @ManyToOne(() => Tourpackage, tourpackage=>tourpackage.vistitedImages,{onDelete:'CASCADE'})
+   @ManyToOne(() => Tourpackage, tourpackage=>tourpackage.vistitedImages)
    @JoinColumn({name:'visited image'})
    tourpackage:Tourpackage;
 }

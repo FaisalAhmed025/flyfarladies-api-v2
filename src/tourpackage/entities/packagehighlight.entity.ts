@@ -10,7 +10,7 @@ export class packagehighlight {
   @IsNotEmpty()
   @Column({length: 1000})
   description: string;
-  @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.highlights,{onDelete:'CASCADE'})
+  @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.highlights)
   @JoinColumn({ name: 'Tour_package_Hightlights' })
   tourpackage:Tourpackage
   
