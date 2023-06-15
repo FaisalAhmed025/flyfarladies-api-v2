@@ -73,7 +73,7 @@ export class PresscoverageController {
       .status(HttpStatus.OK)
       .send({
         status: 'success',
-        message: 'update successfully',
+        message: 'updated successfully',
       });
   }
 
