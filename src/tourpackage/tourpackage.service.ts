@@ -1,5 +1,5 @@
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateBookingPolicyDto } from './dto/creat-bookingpolicy.dto';
@@ -387,28 +387,34 @@ async  remove(Id: string) {
   }
 
 
-  async updateInstallment(Id: string, InstallmentId: number, updateinstall: updateinstallmentdto) {
-    const tourpackage = await this.TourpackageRepo.findOne({
-      where: {
-        Id
+  async updateInstallment(Id: string, installments: updateinstallmentdto[]): Promise<void> {
+    const tourPackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['installments']})
+
+    for (const installmentDto of installments) {
+      const { InstallmentId, Name, Date, Amount } = installmentDto;
+  
+      // Find the installment to update within the tour package
+      const installmentToUpdate = (await tourPackage.installments).find(installment => installment.InstallmentId === InstallmentId);
+  
+      if (!installmentToUpdate) {
+        throw new NotFoundException(`Installment with ID ${InstallmentId} not found in the tour package.`);
       }
-    })
-    if (!tourpackage) {
-      throw new HttpException(
-        `TourPackage not found with this Id=${Id}`,
-        HttpStatus.BAD_REQUEST,
-      );
+  
+      // Update the installment properties
+      installmentToUpdate.Name = Name;
+      installmentToUpdate.Date = Date;
+      installmentToUpdate.Amount = Amount;
+  
+      // Save the updated installment
+      await this.InstallmentRepo.save(installmentToUpdate);
     }
-    const bookingpolicy = await this.InstallmentRepo.findOne({ where: { InstallmentId } })
-    if (!bookingpolicy) {
-      throw new HttpException(
-        `installment not found with this Id=${InstallmentId}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const updatepolicy = await this.InstallmentRepo.update({ InstallmentId }, { ...updateinstall })
-    return updatepolicy;
+    await this.TourpackageRepo.save(tourPackage);
   }
+  
+
+
+
+
 
 
   async DeleteInstallment(Id: string, InstallmentId: number) {

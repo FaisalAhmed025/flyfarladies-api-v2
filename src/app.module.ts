@@ -47,15 +47,15 @@ import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username:"flyfarin_fflv2",
-      password: "123Next2$",
-      host: "flyfarint.com",
-      database:"flyfarin_fflv2",
+      // username:"flyfarin_fflv2",
+      // password: "123Next2$",
+      // host: "flyfarint.com",
+      // database:"flyfarin_fflv2",
 
-      // username:'root',
-      // password:'',
-      // host: '127.0.0.1',
-      // database:'flyfarladies',
+      username:'root',
+      password:'',
+      host: '127.0.0.1',
+      database:'flyfarladies',
 
 
       port:3306,

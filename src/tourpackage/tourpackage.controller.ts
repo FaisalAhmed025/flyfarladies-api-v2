@@ -387,25 +387,58 @@ export class TourpackageController {
     });
   }
 
-  // update booking policy
-  @Patch(':Id/updateinstallment/:InstallmentId')
-  async updateInstallment(
-    @Param('Id') Id: string,
-    @Param('InstallmentId') InstallmentId: number,
-    @Body() updateinstall: updateinstallmentdto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    await this.tourpackageService.updateInstallment(
-      Id,
-      InstallmentId,
-      updateinstall,
-    );
+  @Patch(':Id/updateInstallments')
+async updateInstallments(
+  @Param('Id') Id: string,
+  @Body() installments: updateinstallmentdto[],
+  @Res() res: Response,
+): Promise<any> {
+  try {
+    await this.tourpackageService.updateInstallment(Id, installments);
+
     return res.status(HttpStatus.OK).json({
       status: 'success',
-      message: `installment updated successfully`,
+      message: 'Installments updated successfully',
+    });
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      status: 'error',
+      message: error.message,
     });
   }
+}
+
+//   @Patch('updateinstallments')
+// async updateInstallments(
+//   @Body() installments: updateinstallmentdto[],
+//   @Res() res: Response,
+// ): Promise<any> {
+//   await this.tourpackageService.updateInstallment(installments);
+//   return res.status(HttpStatus.OK).json({
+//     status: 'success',
+//     message: 'Installments updated successfully',
+//   });
+// }
+
+  // // update booking policy
+  // @Patch(':Id/updateinstallment/:InstallmentId')
+  // async updateInstallment(
+  //   @Param('Id') Id: string,
+  //   @Param('InstallmentId') InstallmentId: number,
+  //   @Body() updateinstall: updateinstallmentdto,
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  // ) {
+  //   await this.tourpackageService.updateInstallment(
+  //     Id,
+  //     InstallmentId,
+  //     updateinstall,
+  //   );
+  //   return res.status(HttpStatus.OK).json({
+  //     status: 'success',
+  //     message: `installment updated successfully`,
+  //   });
+  // }
 
   @Delete(':Id/Installment/:InstallmentId')
   async DeleteInstallment(
