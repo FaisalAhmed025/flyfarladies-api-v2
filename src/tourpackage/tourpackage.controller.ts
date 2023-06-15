@@ -532,27 +532,26 @@ async updateInstallments(
       bookingpolicy,
     });
   }
-
-  // update booking policy
-  @Patch(':Id/updatepolicy/:BkId')
-  async updateBookingPolicy(
+  @Patch(':Id/updatebookingpolicy')
+  async updateBookingpolicy(
     @Param('Id') Id: string,
-    @Param('BkId') BkId: number,
-    @Body() updatebookingpolicyDto: updateBookingPolicyDto,
-    req: Request,
+    @Body() bookingpolicy: updateBookingPolicyDto[],
     @Res() res: Response,
-  ) {
-    const updatebooking = await this.tourpackageService.updateBookingolicy(
-      Id,
-      BkId,
-      updatebookingpolicyDto,
-    );
-    return res.status(HttpStatus.OK).json({
-      status: 'success',
-      message: `Booking policy updated successfully`,
-    });
+  ): Promise<any> {
+    try {
+      await this.tourpackageService.updateBookingpolicy(Id, bookingpolicy);
+  
+      return res.status(HttpStatus.OK).json({
+        status: 'success',
+        message: 'Installments updated successfully',
+      });
+    } catch (error) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        status: 'error',
+        message: error.message,
+      });
+    }
   }
-
   @Delete(':Id/deletepolicy/:BkId')
   async DeleteBookingPolicy(
     @Param('Id') Id: string,

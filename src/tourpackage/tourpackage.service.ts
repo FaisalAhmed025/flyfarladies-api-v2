@@ -462,31 +462,30 @@ async  remove(Id: string) {
     return bookingpolicy;
   }
 
-  //update booking policy
-  async updateBookingolicy(Id: string, BkId: number, updateBOokingPolicy: updateBookingPolicyDto) {
-    const tourpackage = await this.TourpackageRepo.findOne({
-      where: {
-        Id
+
+
+
+  async updateBookingpolicy(Id: string, bookingpolicy: updateBookingPolicyDto[]): Promise<void> {
+    const tourPackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['BookingPolicys']})
+
+    for (const bookingDto of bookingpolicy) {
+      const { BkId, description } = bookingDto;
+  
+      // Find the installment to update within the tour package
+      const bookingpolicyToUpdate = (await tourPackage.BookingPolicys).find(bookingpolicy => bookingpolicy.BkId === BkId);
+  
+      if (!bookingpolicyToUpdate) {
+        throw new NotFoundException(`Installment with ID ${BkId} not found in the tour package.`);
       }
-    })
-    if (!tourpackage) {
-      throw new HttpException(
-        `TourPackage not found with this Id=${Id}`,
-        HttpStatus.BAD_REQUEST,
-      );
+  
+      // Update the installment properties
+      bookingpolicyToUpdate.BkId =BkId
+      bookingpolicyToUpdate.description = description
+      // Save the updated installment
+      await this.bookingPolicyRepo.save(bookingpolicyToUpdate);
     }
-    const bookingpolicy = await this.bookingPolicyRepo.findOne({ where: { BkId } })
-    if (!bookingpolicy) {
-      throw new HttpException(
-        `booking policy not found with this Id=${BkId}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const updatepolicy = await this.bookingPolicyRepo.update({ BkId }, { ...updateBOokingPolicy })
-    return updatepolicy;
+    await this.TourpackageRepo.save(tourPackage);
   }
-
-
   
 
 

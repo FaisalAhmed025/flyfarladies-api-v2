@@ -111,29 +111,28 @@ export class BookingController {
 
 
   @Get(':userid/getall/mybookings')
-async MyAllBookings(@Param('userid') userid: string) {
-  const user = await this.bookingRepository.findOne({
-    where: { userid },
-    relations: [
-      'tourPackage',
-      'tourPackage.vistitedImages',
-      'tourPackage.PackageInclusions',
-      'tourPackage.highlights',
-      'tourPackage.refundpolicys',
-      'tourPackage.installments',
-      'travelers'
-     
-    ],
-    order: { CreatedAt: 'DESC' },
-  });
-  if (!user) {
-    throw new NotFoundException('You do not have any bookings');
+  async MyAllBookings(@Param('userid') userid: string) {
+    const bookings = await this.bookingRepository.find({
+      where: { userid },
+      relations: [
+        'tourPackage',
+        'tourPackage.vistitedImages',
+        'tourPackage.PackageInclusions',
+        'tourPackage.highlights',
+        'tourPackage.refundpolicys',
+        'tourPackage.installments',
+        'travelers'
+      ],
+      order: { CreatedAt: 'DESC' },
+    });
+    
+    if (bookings.length === 0) {
+      throw new NotFoundException('You do not have any bookings');
+    }
+  
+    return bookings;
   }
-
-  return { bookedPackages: user };
-}
-
-
+  
   // @Get(':userid/getall/mybookings')
   // async MyAllBookings(@Param('userid') userid: string) {
   //   const user = await this.bookingRepository.findOne({ where: { userid } });
