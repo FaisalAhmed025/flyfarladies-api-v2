@@ -546,6 +546,8 @@ export class UserServices {
    return cheque;
  }
 
+
+
  async AllDeposit(uuid: string) {
    const user = await this.userRepository.findOne({
      where: {
@@ -560,7 +562,7 @@ export class UserServices {
    }
  
    const chequeDeposits = await this.chequeRepository.find({
-     where: {
+     where: {uuid,
        DepositType: 'Cheque', // retrieve cheque deposit requests
      },
      order: {
@@ -570,6 +572,7 @@ export class UserServices {
  
    const mobileBankings = await this.MobileBankingRepository.find({
      where: {
+      uuid,
        DepositType: 'MobileBank', // retrieve mobile banking deposit requests
      },
      order: {
@@ -579,7 +582,7 @@ export class UserServices {
  
    const bankTransfers = await this.BankTransferRepository.find({
      where: {
-
+      uuid,
        DepositType: 'Bank', // retrieve bank transfer deposit requests
      },
      order: {

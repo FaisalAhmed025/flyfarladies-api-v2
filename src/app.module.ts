@@ -88,6 +88,8 @@ import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
         AskQuestion
       ],
       synchronize:false
+
+
     }),
     UserModule,
     TourpackageModule,

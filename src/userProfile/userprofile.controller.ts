@@ -2010,6 +2010,8 @@ export class userProfileController {
     return res.status(HttpStatus.OK).json({ AllDeposit });
   }
 
+  
+
   @Get('allDeposit/request')
   async allDepositrequest(
     @Param('uuid') uuid: string,

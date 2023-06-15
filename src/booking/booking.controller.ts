@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { Booking } from './entity/booking.entity';
 import { ApiTags } from '@nestjs/swagger';
 
+
 @ApiTags('Booking Module')
 @Controller('booking')
 export class BookingController {
@@ -47,7 +48,7 @@ export class BookingController {
   }
 
   @Patch(':Bookingid/confirmed')
-  async Approvedbooking(
+  async confirmedbooking(
     @Param('Bookingid') Bookingid: string,
     @Body('uuid') uuid: string,
     Email: string,
@@ -57,8 +58,51 @@ export class BookingController {
     await this.bookingService.MakePayementwithwallet(Bookingid, uuid, Email);
     return res
       .status(HttpStatus.OK)
+      .send({ status: 'success', message: 'Payment Successfull' });
+  }
+
+
+  @Patch(':Bookingid/approved')
+  async ApprovedAdmin(
+    @Param('Bookingid') Bookingid: string,
+    @Body('uuid') uuid: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    await this.bookingService.ApprvedAdmin(Bookingid, uuid, req.body);
+    return res
+      .status(HttpStatus.OK)
       .send({ status: 'success', message: 'Booking Confirmed' });
   }
+
+  
+  @Patch(':Bookingid/cancelled/admin')
+  async RejectdAdmin(
+    @Param('Bookingid') Bookingid: string,
+    @Body('uuid') uuid: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    await this.bookingService.Cancelledbookingbyadmin(Bookingid, uuid,req.body);
+    return res
+      .status(HttpStatus.OK)
+      .send({ status: 'success', message: 'Booking Cancelled, waiting for' });
+  }
+
+  
+  @Patch(':Bookingid/cancelled')
+  async cancelbyuser(
+    @Param('Bookingid') Bookingid: string,
+    @Body('uuid') uuid: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    await this.bookingService.Cancelledbookingbyuser(Bookingid, uuid,req.body);
+    return res
+      .status(HttpStatus.OK)
+      .send({ status: 'success', message: 'Booking Cancelled,please wait for refund' });
+  }
+
 
   @Get(':Bookingid')
   async getBooking(@Param('Bookingid') Bookingid: string) {

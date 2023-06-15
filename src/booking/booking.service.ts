@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, Res } from '@nestjs/common';
+import { BadRequestException, Body, HttpException, HttpStatus, Injectable, NotFoundException, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
@@ -55,9 +55,6 @@ export class BookingService {
     }
     await this.tourPackageRepository.save(tourPackage);
     }
-    
-  
-    
     const userprofile = await this.UserRepository.findOne({ where: {Email}})
     const arrayoftravlers =[]
     let TotalPrice:number = 0
@@ -107,7 +104,6 @@ export class BookingService {
  
  }
 
-
    async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
     const booking = await this.bookingRepository.findOne({where:{Bookingid}})
     const tourPackageId = booking.packageId
@@ -143,7 +139,7 @@ export class BookingService {
     }
     user.Wallet = Math.round(user.Wallet * 100) / 100;
     await this.UserRepository.save(user);
-    booking.status =BookingStatus.APPROVED
+    booking.status =BookingStatus.ISSUE_IN_PROCESS
     await this.bookingRepository.save(booking);
   }
   
@@ -906,7 +902,7 @@ export class BookingService {
       if(profile.Wallet>=totalprice){
          profile.Wallet -= totalprice
          await this.UserRepository.save(profile);
-         booking.status = BookingStatus.APPROVED;
+         booking.status = BookingStatus.ISSUE_IN_PROCESS;
          booking.Wallet =profile.Wallet
          booking.UpdatedAt = new Date()
          const updatedBooking = await this.bookingRepository.save(booking);
@@ -915,6 +911,101 @@ export class BookingService {
       else{
          throw new BadRequestException('Insufficient balance! please deposit to your wallet');
       }
+      
+    }
+
+
+    async ApprvedAdmin(Bookingid: string, uuid:string,
+      @Body() body:any): Promise<void>{
+        // Find the booking object with the provided ID
+        const booking = await this.bookingRepository.findOne({where:{Bookingid}});
+        if(booking.status!== BookingStatus.ISSUE_IN_PROCESS)
+        {
+           throw new NotFoundException('Booking request already approved or Rejected');
+        }
+        // Update the booking status to approved
+        const profile = await this.UserRepository.findOne({ where: {uuid} });
+        if (!profile) {
+           throw new NotFoundException('user not found');
+        }
+
+        if(booking.status === BookingStatus.ISSUE_IN_PROCESS){
+          booking.UpdatedAt = new Date()
+          booking.status = BookingStatus.CONFIRMED;
+          booking.ActionBy = `Action By ${body.ActionBy}`;
+          if (!body.ActionBy) {
+            throw new NotFoundException('ActionBy');
+          }
+          const updatedBooking = await this.bookingRepository.save(booking);
+          await this.sendBookingApprovalToUser(updatedBooking);
+        }
+        else{
+          throw new BadRequestException('No booking in process');
+       }
+        
+      }
+
+      
+    async Cancelledbookingbyadmin(Bookingid: string, uuid:string, @Body()body: any): Promise<void>{
+        // Find the booking object with the provided ID
+        const booking = await this.bookingRepository.findOne({where:{Bookingid}});
+        if(booking.status!== BookingStatus.ISSUE_IN_PROCESS)
+        {
+           throw new NotFoundException('Booking request already approved or Rejected');
+        }
+        // Update the booking status to approved
+        const profile = await this.UserRepository.findOne({ where: {uuid} });
+        if (!profile) {
+           throw new NotFoundException('user not found');
+        }
+
+        if(booking.status === BookingStatus.ISSUE_IN_PROCESS){
+          booking.UpdatedAt = new Date()
+          booking.status = BookingStatus.CANCELLED;
+          booking.CancelledReason =` Reject Due to ${body.CancelledReason}`;
+          if (!body.CancelledReason) {
+            throw new NotFoundException('CancelledReason');
+          }
+          booking.ActionBy = `Action By ${body.ActionBy}`;
+          if (!body.ActionBy) {
+            throw new NotFoundException('ActionBy');
+          }
+          await this.bookingRepository.save(booking);
+          // await this.sendBookingApprovalToUser(updatedBooking);
+        }
+        else{
+          throw new BadRequestException('No booking in process');
+       }
+        
+      }
+
+        
+    async Cancelledbookingbyuser(Bookingid: string, uuid:string, @Body() body: any): Promise<void>{
+      // Find the booking object with the provided ID
+      const booking = await this.bookingRepository.findOne({where:{Bookingid}});
+      if(booking.status!== BookingStatus.ISSUE_IN_PROCESS)
+      {
+         throw new NotFoundException('Booking request already approved or Rejected');
+      }
+      // Update the booking status to approved
+      const profile = await this.UserRepository.findOne({ where: {uuid} });
+      if (!profile) {
+         throw new NotFoundException('user not found');
+      }
+
+      if(booking.status === BookingStatus.ISSUE_IN_PROCESS){
+        booking.UpdatedAt = new Date()
+        booking.status = BookingStatus.CANCELLED;
+        booking.CancelledReason =` Reject Due to ${body.CancelledReason}`;
+        if (!body.CancelledReason) {
+          throw new NotFoundException('CancelledReason');
+        }
+        await this.bookingRepository.save(booking);
+        // await this.sendBookingApprovalToUser(updatedBooking);
+      }
+      else{
+        throw new BadRequestException('No booking in process');
+     }
       
     }
 
@@ -937,7 +1028,7 @@ export class BookingService {
       if(profile.Wallet>=totalprice){
          profile.Wallet -= totalprice
          await this.UserRepository.save(profile);
-         booking.status = BookingStatus.APPROVED;
+         booking.status = BookingStatus.ISSUE_IN_PROCESS;
          booking.Wallet =profile.Wallet
          booking.UpdatedAt = new Date()
          const updatedBooking = await this.bookingRepository.save(booking);
