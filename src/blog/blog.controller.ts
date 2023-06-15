@@ -114,38 +114,6 @@ export class BlogController {
 
   }
 
-  @Post('AddpressCoverage')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'Image', maxCount: 2 }]))
-  async AddPressCoverage(
-    @UploadedFiles()
-    file: {
-      Image?: Express.Multer.File[];
-    },
-    @Req() req: Request,
-    @Body() body,
-    @Res() res: Response,
-  ) {
-    const { links, Date, Description } = req.body;
-    const image = await this.s3service.Addimage(file.Image[0]);
-    const press = new PressCoverages();
-    press.Image = image;
-    press.Description = Description;
-    press.Date = Date;
-    press.links = links;
-    await this.PressCoveragesrepo.save({ ...press });
-    return res
-      .status(HttpStatus.OK)
-      .send({
-        status: 'success',
-        message: 'Press coverage uploaded successfully',
-      });
-  }
-
-  @Get('allpressoverages')
-  async findAllpress() {
-    return await this.PressCoveragesrepo.find({});
-  }
-
 
 
   @Get(':id')

@@ -36,11 +36,12 @@ import { BlogModule } from './blog/blog.module';
 import { Blog } from './blog/entities/blog.entity';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { Testimonial } from './testimonial/entities/testimonial.entity';
-import { PressCoverages } from './blog/entities/press.entity';
 import { Payement } from './booking/entity/payement.entity';
 import { oauthModule } from './userProfile/oauth.module';
 import { AskquestionModule } from './askquestion/askquestion.module';
 import { AskQuestion } from './askquestion/Entity/askquestion.entity';
+import { PresscoverageModule } from './presscoverage/presscoverage.module';
+import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
@@ -56,7 +57,6 @@ import { AskQuestion } from './askquestion/Entity/askquestion.entity';
       // host: '127.0.0.1',
       // database:'flyfarladies',
 
-      
 
       port:3306,
       entities: [Admin,
@@ -87,7 +87,7 @@ import { AskQuestion } from './askquestion/Entity/askquestion.entity';
         socialimageenity,
         AskQuestion
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
@@ -100,6 +100,7 @@ import { AskQuestion } from './askquestion/Entity/askquestion.entity';
     TestimonialModule,
     oauthModule,
     AskquestionModule,
+    PresscoverageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
