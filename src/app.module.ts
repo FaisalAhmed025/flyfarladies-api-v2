@@ -87,7 +87,7 @@ import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
         socialimageenity,
         AskQuestion
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,
