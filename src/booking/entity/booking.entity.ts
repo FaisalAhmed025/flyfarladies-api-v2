@@ -60,4 +60,8 @@ export class Booking{
    @ManyToMany(() => Traveller)
    @JoinTable({name: 'Traveler_bookings'})
    travelers: Traveller[];
+   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+   public Created_At: Date;
+   @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+   public Updated_At: Date;
 }
