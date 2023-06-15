@@ -38,15 +38,15 @@ export class BlogController {
     @Res() res: Response,
   ) {
     const { Title, Description, Blogfor, WrittenBy, Type } = req.body;
-    const testimonialimagess = [];
+    const blogimages = [];
     if (file.blogimages) {
       for (let i = 0; i < file.blogimages.length; i++) {
         const imageUrl = await this.s3service.Addimage(file.blogimages[i]);
-        testimonialimagess.push(imageUrl);
+        blogimages.push(imageUrl);
       }
     }
     const blog = new Blog();
-    blog.blogimages = testimonialimagess;
+    blog.blogimages = blogimages;
     blog.Title = Title;
     blog.Type = Type;
     blog.Description = Description;
@@ -56,6 +56,62 @@ export class BlogController {
     return res
       .status(HttpStatus.OK)
       .send({ status: 'success', message: 'blog created successfully' });
+  }
+
+
+  @Patch(':blogid')
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'blogimages', maxCount: 10 }]),
+  )
+  async Updatelog(
+    @UploadedFiles()
+    file: {
+      blogimages?: Express.Multer.File[];
+    },
+    @Param('blogid') blogid: string,
+    @Req() req: Request,
+    @Body() body,
+    @Res() res: Response,
+  ) {
+    const { Title, Description, Blogfor, WrittenBy, Type } = req.body;
+  
+    const blog = await this.BlogRepo.findOne({ where: { blogid } });
+  
+    if (file.blogimages) {
+      const blogimages = [];
+      for (let i = 0; i < file.blogimages.length; i++) {
+        const imageUrl = await this.s3service.Addimage(file.blogimages[i]);
+        blogimages.push(imageUrl);
+      }
+      blog.blogimages = blogimages;
+    }
+  
+    blog.Title = Title;
+    blog.Type = Type;
+    blog.Description = Description;
+    blog.Blogfor = Blogfor;
+    blog.WrittenBy = WrittenBy;
+  
+    await this.BlogRepo.update({ blogid }, { ...blog });
+    return res
+      .status(HttpStatus.OK)
+      .send({ status: 'success', message: 'blog updated successfully' });
+  }
+
+  @Get('myblogs')
+ async findAll( @Res() res: Response) {
+    const blogs= await this.BlogRepo.find({})
+    res.status(HttpStatus.OK).json({blogs}) 
+  }
+
+
+  @Delete(':blogid')
+  async remove(  @Res() res: Response, @Param('blogid') blogid: string) {
+   await this.BlogRepo.delete(blogid)
+   return res
+   .status(HttpStatus.OK)
+   .send({ status: 'success', message: 'blog has deleted' });
+
   }
 
   @Post('AddpressCoverage')
@@ -90,33 +146,7 @@ export class BlogController {
     return await this.PressCoveragesrepo.find({});
   }
 
-  // @Patch('update/:blogid')
-  // @UseInterceptors(FileFieldsInterceptor([
-  //   { name: 'Image1', maxCount: 1 },
-  //   { name: 'Image2', maxCount: 1},
-  //   { name: 'Image3', maxCount: 1 },
-  //   { name: 'Image4', maxCount: 1 },
-  //   { name: 'Image5', maxCount: 1 },
-  // ]))
-  // async updateimage(
-  //   @UploadedFiles()
-  //   file: {
-  //     blogimages?: Express.Multer.File[],},
-  //   @Req() req: Request,
-  //   @Param ('blogid')blogid:string,
-  //   @Body() body,
-  //   @Res() res: Response) {
-  //   const image1 = file.blogimages? await this.s3service.updateBlogIMages(blogid,file.blogimages[0]):null
-  //   const blog = new Blog();
-  //   if(image1) blog.blogimages =image1
-  //   await this.BlogRepo.update({blogid},{...blog})
-  //   return res.status(HttpStatus.OK).send({ status: "success", message: " image update successfully", })
-  // }
 
-  @Get('myblogs')
-  findAll() {
-    return this.blogService.findAll();
-  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -128,8 +158,4 @@ export class BlogController {
     return this.blogService.update(id, updateBlogDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.blogService.remove(id);
-  }
 }

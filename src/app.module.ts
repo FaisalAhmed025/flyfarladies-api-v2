@@ -56,6 +56,8 @@ import { AskQuestion } from './askquestion/Entity/askquestion.entity';
       // host: '127.0.0.1',
       // database:'flyfarladies',
 
+      
+
       port:3306,
       entities: [Admin,
         Payement,
