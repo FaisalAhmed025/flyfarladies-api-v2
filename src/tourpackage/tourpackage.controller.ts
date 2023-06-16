@@ -57,7 +57,6 @@ export class TourpackageController {
     private refundPolicyRepo: Repository<refundpolicy>,
     @InjectRepository(Installment)
     private InstallmentRepo: Repository<Installment>,
-
     @InjectRepository(VisitedPlace)
     private visitedImageRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
@@ -945,6 +944,7 @@ async updatetourpackagehighlight(
       const url = await this.s3service.Addimage(file);
       const viistedimage = new VisitedPlace()
       viistedimage.VisitedImagePath =url
+      viistedimage.tourpackage =tourpackage
       updatedvisitedimage.push(viistedimage);
     }
     await this.visitedImageRepo.save(updatedvisitedimage);
