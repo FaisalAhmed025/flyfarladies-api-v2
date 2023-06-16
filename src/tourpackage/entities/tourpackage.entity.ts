@@ -54,18 +54,23 @@ export class Tourpackage {
     TotalDuration: string
     @Column({ nullable: true,length: 1000 })
     PackageOverview: string;
-    @Column('bool', { default: false, nullable: true })
-    Availability: boolean
-    @Column('bool', { default: false, nullable: true })
-    Showpackage: boolean
-    @Column('bool', { default: false, nullable: true })
-    Flight: boolean
-    @Column('bool', { default: false, nullable: true })
-    Food: boolean
-    @Column('bool', { default: false, nullable: true })
-    Transport: boolean
-    @Column('bool', { default: false, nullable: true })
-    Hotel: boolean
+    @Column('boolean', { default: false, nullable: true })
+    Availability: boolean;
+
+    @Column('boolean', { default: false, nullable: true })
+    Showpackage: boolean;
+
+    @Column('boolean', { default: false, nullable: true })
+    Flight: boolean;
+
+    @Column('boolean', { default: false, nullable: true })
+    Food: boolean;
+
+    @Column('boolean', { default: false, nullable: true })
+    Transport: boolean;
+
+    @Column('boolean', { default: false, nullable: true })
+    Hotel: boolean;
     @IsNotEmpty({message:'coverimageurl could not be empty'})
     @Column({ nullable: true })
     coverimageurl: string
