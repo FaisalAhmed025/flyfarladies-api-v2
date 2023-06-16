@@ -1,3 +1,4 @@
+import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
 import { AlbumImage } from 'src/tourpackage/entities/albumimage.entity';
 
 import { CreateInstallmentDto } from './dto/create-installment.dto';
@@ -7,7 +8,6 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestj
 import { Request, Response } from 'express';
 import { Tourpackage } from './entities/tourpackage.entity';
 import { Repository } from 'typeorm';
-import { VisitedPlace } from './entities/visitedplace.entity';
 import { CreateBookingPolicyDto } from './dto/creat-bookingpolicy.dto';
 import { updateBookingPolicyDto } from './dto/update-bookingpolicy.dto';
 import { createRefundPolicyDto } from './dto/create-refundpolicy.dto';
@@ -43,9 +43,6 @@ export class TourpackageController {
     @InjectRepository(MainImage) private MainImageRepo: Repository<MainImage>,
     @InjectRepository(AlbumImage)
     private AlbumimageRepo: Repository<AlbumImage>,
-    @InjectRepository(VisitedPlace)
-    private visitedplaceRepo: Repository<VisitedPlace>,
-
     @InjectRepository(Packageinclusion)
     private packageInclusionRepo: Repository<Packageinclusion>,
     @InjectRepository(tourpackageplan)
@@ -60,8 +57,7 @@ export class TourpackageController {
     private refundPolicyRepo: Repository<refundpolicy>,
     @InjectRepository(Installment)
     private InstallmentRepo: Repository<Installment>,
-    @InjectRepository(AlbumImage)
-    private AlbumImageRepo: Repository<AlbumImage>,
+
     @InjectRepository(VisitedPlace)
     private visitedImageRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
@@ -900,16 +896,14 @@ async updatetourpackagehighlight(
     const tourpackage = await this.TourpackageRepo.findOne({ where: { Id }, relations: ['mainimage'] });
     if (!tourpackage) {
       throw new HttpException(
-        "TourPackage not found, cannot update album image",
+        "TourPackage not found, cannot update main image",
         HttpStatus.BAD_REQUEST,
       );
     }
   
     // Delete existing album images (if needed)
     await this.MainImageRepo.delete({ tourpackage: { Id } });
-  
     const albumImages: MainImage[] = [];
-  
     for (const file of files) {
       const mainimageurl = await this.s3service.Addimage(file);
       const newAlbumImage = new MainImage();
@@ -925,6 +919,39 @@ async updatetourpackagehighlight(
     return res.status(HttpStatus.OK).send({
       status: 'success',
       message: 'main image Updated Successfully',
+    });
+  }
+
+
+  @Post(':Id/Updatevisitedimage')
+  @UseInterceptors(FilesInterceptor('VisitedImagePath', 20))
+  async updatevisited(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('Id') Id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const tourpackage = await this.TourpackageRepo.findOne({ where: { Id }, relations: ['vistitedImages'] });
+    if (!tourpackage) {
+      throw new HttpException(
+        "TourPackage not found, cannot update image",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  
+    await this.visitedImageRepo.delete({ tourpackage: { Id } });
+    const updatedvisitedimage: VisitedPlace[] = [];
+    for (const file of files) {
+      const url = await this.s3service.Addimage(file);
+      const viistedimage = new VisitedPlace()
+      viistedimage.VisitedImagePath =url
+      updatedvisitedimage.push(viistedimage);
+    }
+    await this.visitedImageRepo.save(updatedvisitedimage);
+  
+    return res.status(HttpStatus.OK).send({
+      status: 'success',
+      message: 'vistedimage Updated Successfully',
     });
   }
   
@@ -962,37 +989,7 @@ async updatetourpackagehighlight(
     });
   }
 
-  @Patch(':Id/visitedimage/:VimageId')
-  @UseInterceptors(FilesInterceptor('VisitedImagePath', 20))
-  async updateVistedImageUrl(
-    @UploadedFiles()
-    files: Express.Multer.File[],
-    @Param('Id') Id: string,
-    @Param('VimageId') VimageId: number,
-    @Body() bodyParser,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    for (const file of files) {
-      
-      const ImageUrl = await this.s3service.updatevisitedImage(
-        Id,
-        VimageId,
-        file,
-      );
-      const visitedimage = new VisitedPlace();
-      visitedimage.VisitedImagePath = ImageUrl;
-      // this is necessary when only one object is passed
-      // await this.TourpackageRepo.update(Id,tourpackage)
-      //for multiple object but both will work
-      await this.visitedplaceRepo.update(VimageId, visitedimage);
-    }
 
-    return res.status(HttpStatus.OK).json({
-      status: 'success',
-      message: `visitedimage has updated successfully`,
-    });
-  }
 
   @Get(':Id/allalbumimage')
   async getAllAlbumImage(
@@ -1071,8 +1068,7 @@ async updatetourpackagehighlight(
       const VisitedImagePath = await this.s3service.Addimage(file);
       const newalbum = new VisitedPlace();
       newalbum.VisitedImagePath = VisitedImagePath;
-      newalbum.PlaceName = req.body.PlaceName;
-      await this.visitedplaceRepo.save({ ...newalbum, tourpackage });
+      await this.visitedImageRepo.save({ ...newalbum, tourpackage });
     }
     return res
       .status(HttpStatus.OK)
