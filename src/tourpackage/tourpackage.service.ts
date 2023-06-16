@@ -564,30 +564,123 @@ async  remove(Id: string) {
   }
 
 
-  // update Refund policy
-  async updateRefundolicy(Id: string, RId: number, updaterefundPolicy: UpdateRefundPolicy) {
-    const tourpackage = await this.TourpackageRepo.findOne({
-      where: {
-        Id
+  async updateRefundpolicy(Id:string ,Refundpolicy: UpdateRefundPolicy[]): Promise<void> {
+    const tourpackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['refundpolicys']})
+
+    for (const refunpolicydDto of Refundpolicy) {
+      const { RId, RefundPolicy } = refunpolicydDto;
+  
+      // Find the installment to update within the tour package
+      const refundpolicyToUpdate = (await tourpackage.refundpolicys).find(refundpolicy => refundpolicy.RId === RId);
+  
+      if (!refundpolicyToUpdate) {
+        throw new NotFoundException(`refundpolicys with ID ${RId} not found in the tour package.`);
       }
-    })
-    if (!tourpackage) {
-      throw new HttpException(
-        `TourPackage not found with this Id=${Id}`,
-        HttpStatus.BAD_REQUEST,
-      );
+
+      // Update the installment properties
+    refundpolicyToUpdate.RId =RId
+    refundpolicyToUpdate.RefundPolicy = RefundPolicy
+      // Save the updated installment
+      await this.refundPolicyRepo.save(refundpolicyToUpdate);
     }
-    const bookingpolicy = await this.refundPolicyRepo.findOne({ where: { RId } })
-    if (!bookingpolicy) {
-      throw new HttpException(
-        `Refund policy not found with this Id=${RId}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const updatepolicy = await this.refundPolicyRepo.update({ RId }, { ...updaterefundPolicy })
-    return updatepolicy;
+    await this.TourpackageRepo.save(tourpackage);
   }
 
+  async updatetourpackageplan(Id:string ,tourpackageplan: updateTourPackagePlanDto[]): Promise<void> {
+    const tourpackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['tourpackageplans']})
+
+    for (const plandateplandDto of tourpackageplan) {
+      const { dayId, dayplan,Title } = plandateplandDto;
+  
+      // Find the installment to update within the tour package
+      const planToUpdate = (await tourpackage.tourpackageplans).find(refundpolicy => refundpolicy.dayId === dayId);
+  
+      if (!planToUpdate) {
+        throw new NotFoundException(`updateplan with ID ${dayId} not found in the tour package.`);
+      }
+
+      // Update the installment properties
+      planToUpdate.dayId =dayId
+      planToUpdate.Title =Title
+      planToUpdate.dayplan =dayplan
+   
+      // Save the updated installment
+      await this.tourpackagePlanRepo.save(planToUpdate);
+    }
+    await this.TourpackageRepo.save(tourpackage);
+  }
+
+  async updatetpackageinclsuions(Id:string ,packageinclsuions: updatepackageInclusionDto[]): Promise<void> {
+    const tourpackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['PackageInclusions']})
+
+    for (const packageinclsuionsdto of packageinclsuions) {
+      const { InId, Inclusions } = packageinclsuionsdto;
+  
+      // Find the installment to update within the tour package
+      const inclusionsToUpdate = (await tourpackage.PackageInclusions).find(refundpolicy => refundpolicy.InId === InId);
+  
+      if (!inclusionsToUpdate) {
+        throw new NotFoundException(`packageinclusions with ID ${InId} not found in the tour package.`);
+      }
+
+      // Update the installment properties
+      inclusionsToUpdate.InId = InId;
+      inclusionsToUpdate.Inclusions = Inclusions
+
+      // Save the updated installment
+      await this.packageInclusionRepo.save(inclusionsToUpdate);
+    }
+    await this.TourpackageRepo.save(tourpackage);
+  }
+
+
+  async updatetpackageExclusions(Id:string ,packageexclusions: updatepackageExclusionsDto[]): Promise<void> {
+    const tourpackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['exclusions']})
+
+    for (const packageexclsuionsdto of packageexclusions) {
+      const {ExId, PackageExclusions } = packageexclsuionsdto;
+  
+      // Find the installment to update within the tour package
+      const exclusionsToUpdate = (await tourpackage.exclusions).find(exclusionss => exclusionss.ExId === ExId);
+  
+      if (!exclusionsToUpdate) {
+        throw new NotFoundException(`packageExclusions with ID ${ExId} not found in the tour package.`);
+      }
+
+      exclusionsToUpdate.ExId =ExId
+      exclusionsToUpdate.PackageExclusions =PackageExclusions
+  
+      // Save the updated installment
+      await this.packageexcluionsRepo.save(exclusionsToUpdate);
+    }
+    await this.TourpackageRepo.save(tourpackage);
+  }
+
+
+  
+  async updatetpackageHighlights(Id:string ,packagehighlight: UpdatepackageHighlightDto[]): Promise<void> {
+    const tourpackage = await this.TourpackageRepo.findOne({where:{Id}, relations:['highlights']})
+    
+    for (const highlightdto of packagehighlight) {
+      const {HiId, description } = highlightdto;
+  
+      // Find the installment to update within the tour package
+      const highlightToUpdate = (await tourpackage.highlights).find(highlight => highlight.HiId === HiId);
+  
+      if (!highlightToUpdate) {
+        throw new NotFoundException(`highlight with ID ${HiId} not found in the tour package.`);
+      }
+
+      highlightToUpdate.HiId =HiId
+      highlightToUpdate.description =description
+  
+      // Save the updated installment
+      await this.packageHighlightRepo.save(highlightToUpdate);
+    }
+    await this.TourpackageRepo.save(tourpackage);
+  }
+  
+  
 
   //Delete refund policy
   async DeleterefundPolicy(Id: string, RId: number) {

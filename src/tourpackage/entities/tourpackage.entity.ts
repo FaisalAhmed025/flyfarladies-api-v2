@@ -84,7 +84,7 @@ export class Tourpackage {
     @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage,{lazy:true} )
     highlights:Promise<packagehighlight[]>;
     @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage,{lazy:true})
-    refundpolicys:Promise<refundpolicy[]>;
+    refundpolicys: Promise<refundpolicy[]> ;
     @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage,{lazy:true})
     tourpackageplans:Promise<tourpackageplan[]> ;
     @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true} )

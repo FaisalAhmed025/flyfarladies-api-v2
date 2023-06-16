@@ -408,6 +408,116 @@ async updateInstallments(
   }
 }
 
+@Patch(':Id/updaterefundpolicy')
+async updateRefundpolicy(
+  @Param('Id') Id: string,
+  @Body() refundpolicy: UpdateRefundPolicy[],
+  @Res() res: Response,
+): Promise<any> {
+  try {
+    await this.tourpackageService.updateRefundpolicy(Id, refundpolicy);
+
+    return res.status(HttpStatus.OK).json({
+      status: 'success',
+      message: 'Refundpolicy updated successfully',
+    });
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+}
+
+
+@Patch(':Id/updatetourpackageplan')
+async updatetourpackageplan(
+  @Param('Id') Id: string,
+  @Body() tourpackageplan: updateTourPackagePlanDto[],
+  @Res() res: Response,
+): Promise<any> {
+  try {
+    await this.tourpackageService.updatetourpackageplan(Id, tourpackageplan);
+
+    return res.status(HttpStatus.OK).json({
+      status: 'success',
+      message: 'tourpackage plan updated successfully',
+    });
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+}
+
+
+
+@Patch(':Id/updateinclusions')
+async updatetourpackageinclusions(
+  @Param('Id') Id: string,
+  @Body() packageinclsuins: updatepackageInclusionDto[],
+  @Res() res: Response,
+): Promise<any> {
+  try {
+    await this.tourpackageService.updatetpackageinclsuions(Id, packageinclsuins);
+
+    return res.status(HttpStatus.OK).json({
+      status: 'success',
+      message: 'packageinclusions updated successfully',
+    });
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+}
+
+@Patch(':Id/updateExclusions')
+async updatetourpackageExclsuions(
+  @Param('Id') Id: string,
+  @Body() packageexclsuins: updatepackageExclusionsDto[],
+  @Res() res: Response,
+): Promise<any> {
+  try {
+    await this.tourpackageService.updatetpackageExclusions(Id, packageexclsuins);
+
+    return res.status(HttpStatus.OK).json({
+      status: 'success',
+      message: 'package Exclusions updated successfully',
+    });
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+}
+
+
+
+@Patch(':Id/updatehighlight')
+async updatetourpackagehighlight(
+  @Param('Id') Id: string,
+  @Body() highlightdto: UpdatepackageHighlightDto[],
+  @Res() res: Response,
+): Promise<any> {
+  try {
+    await this.tourpackageService.updatetpackageHighlights(Id, highlightdto);
+
+    return res.status(HttpStatus.OK).json({
+      status: 'success',
+      message: 'package highlight updated successfully',
+    });
+  } catch (error) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+}
+
 //   @Patch('updateinstallments')
 // async updateInstallments(
 //   @Body() installments: updateinstallmentdto[],
@@ -599,23 +709,6 @@ async updateInstallments(
   }
 
   // update refund policy
-  @Patch(':Id/updateRefundpolicy/:RId')
-  async updateRefundPolicy(
-    @Param('Id') Id: string,
-    @Param('RId') RId: number,
-    @Body() updateRefundlicyDto: UpdateRefundPolicy,
-    req: Request,
-    @Res() res: Response,
-  ) {
-    const updaterefund = await this.tourpackageService.updateRefundolicy(
-      Id,
-      RId,
-      updateRefundlicyDto,
-    );
-    return res.status(HttpStatus.OK).json({
-      status: 'success',
-    });
-  }
 
   // delete refund policy
   @Delete(':Id/deleteRefundpolicy/:RId')
@@ -939,25 +1032,6 @@ async updateInstallments(
 
   //update package exclsuions
 
-  @Patch(':Id/updateplan/:dayId')
-  async updatePackageplan(
-    @Param('Id') Id: string,
-    @Param('dayId') dayId: number,
-    @Body() updatedayplanDto: updateTourPackagePlanDto,
-    req: Request,
-    @Res() res: Response,
-  ) {
-    const updatedayplan = await this.tourpackageService.updatedayplan(
-      Id,
-      dayId,
-      updatedayplanDto,
-    );
-    return res.status(HttpStatus.OK).json({
-      status: 'success',
-      message: `dayplan with Id=${dayId} has updated successfully`,
-      updatedayplan,
-    });
-  }
 
   // delete excluions
   @Delete(':Id/deletedayplan/:dayId')
