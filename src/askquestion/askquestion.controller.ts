@@ -31,6 +31,28 @@ export class AskquestionController {
       });
      }
 
+     @Post(':id')
+     async updateQuestion(
+     @Body() body,
+     @Param('id') id: string,
+     @Req() req: Request,
+     @Res() res: Response){
+      const {FullName,Email,Phone,TourType,Traveller,Date,Description}=req.body
+      const question = await this.askQuestionRepository.findOne({where:{id}})
+      question.FullName =FullName
+      question.Date = Date
+      question.Email =Email
+      question.Phone =Phone
+      question.TourType =TourType
+      question.Traveller =Traveller
+      question.Description =Description
+      await this.askQuestionRepository.update({id},{...question})
+      return res.status(HttpStatus.CREATED).json({
+        status: 'success',
+        message: 'Thanks for asking question',
+      });
+     }
+
      @Get('all')
      async allquestion(){
       const allquestion =await this.askQuestionRepository.find({})

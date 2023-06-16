@@ -974,6 +974,7 @@ async updatetourpackagehighlight(
     @Res() res: Response,
   ) {
     for (const file of files) {
+      
       const ImageUrl = await this.s3service.updatevisitedImage(
         Id,
         VimageId,
