@@ -170,110 +170,116 @@ export class TourpackageController {
 
 
 
-  
-  @Patch(':Id')
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'coverimageurl', maxCount: 2 }]))
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: { 
-        MainTitle: { type: 'string' },
-        SubTitle: { type: 'string' },
-        Price: { type: 'number' },
-        City: { type: 'string' },
-        Discount: { type: 'number' },
-        Location: { type: 'string' },
-        Availability: { type: 'bool' },
-        StartDate: { type: 'date' },
-        EndDate: { type: 'date' },
-        TripType: { type: 'string' },
-        TotalDuration: { type: 'number' },
-        PackageOverview: { type: 'string' },
-        Showpackage: { type: 'bool' },
-        Flight: { type: 'bool' },
-        Transport: { type: 'bool' },
-        Food: { type: 'bool' },
-        Hotel: { type: 'bool' },
-        Country: { type: 'string' },
-        AvailableSeats: { type: 'string' },
-        MinimumAge: { type: 'number' },
-        MaximumAge: { type: 'number' },
-        coverimageurl: {
-          type: 'string',
-          format: 'binary',
-        },
+@Post(':Id') // Change the HTTP method to POST and add 'update' in the route
+@UseInterceptors(FileFieldsInterceptor([
+  { name: 'coverimageurl', maxCount: 2 }
+]))
+@ApiConsumes('multipart/form-data')
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: { 
+      MainTitle: { type: 'string' },
+      SubTitle: { type: 'string' },
+      Price: { type: 'number' },
+      City: { type: 'string' },
+      Discount: { type: 'number' },
+      Location: { type: 'string' },
+      Availability: { type: 'bool' },
+      StartDate: { type: 'date' },
+      EndDate: { type: 'date' },
+      TripType: { type: 'string' },
+      TotalDuration: { type: 'number' },
+      PackageOverview: { type: 'string' },
+      Showpackage: { type: 'bool' },
+      Flight: { type: 'bool' },
+      Transport: { type: 'bool' },
+      Food: { type: 'bool' },
+      Hotel: { type: 'bool' },
+      Country: { type: 'string' },
+      AvailableSeats: { type: 'string' },
+      MinimumAge: { type: 'number' },
+      MaximumAge: { type: 'number' },
+      coverimageurl: {
+        type: 'string',
+        format: 'binary',
       },
     },
-  })
-  async updateTravelPackage(
-    @UploadedFiles() 
-    file: {
-      coverimageurl?: Express.Multer.File[]},
-    @Req() req: Request,
-    @Body() body,
-    @Param('Id') Id: string,
-    @Res() res: Response,
-  ) {
-    const {
-      MainTitle,
-      SubTitle,
-      Price,
-      City,
-      Discount,
-      Location,
-      Availability,
-      StartDate,
-      EndDate,
-      TripType,
-      TotalDuration,
-      PackageOverview,
-      Showpackage,
-      Flight,
-      Transport,
-      Food,
-      Hotel,
-      Country,
-      AvailableSeats,
-      MinimumAge,
-      MaximumAge,
-    } = req.body;
-    let coverimageurl = null;
-    if (file.coverimageurl && file.coverimageurl.length > 0) {
-      coverimageurl = await this.s3service.Addimage(file.coverimageurl[0]);
-    }
-    const tourpackage = await this.TourpackageRepo.findOne({where:{Id}});
-    tourpackage.coverimageurl = coverimageurl;
-    tourpackage.MainTitle = MainTitle;
-    tourpackage.SubTitle = SubTitle;
-    tourpackage.Price = Price;
-    tourpackage.City = City;
-    tourpackage.Discount = Discount;
-    tourpackage.Location = Location;
-    tourpackage.Availability = Availability;
-    tourpackage.StartDate = StartDate;
-    tourpackage.EndDate = EndDate;
-    tourpackage.TripType = TripType;
-    tourpackage.TotalDuration = TotalDuration;
-    tourpackage.AvailableSeats = AvailableSeats;
-    tourpackage.MinimumAge = MinimumAge;
-    tourpackage.MaximumAge = MaximumAge;
-    tourpackage.PackageOverview = PackageOverview;
-    tourpackage.Showpackage = Showpackage;
-    tourpackage.Flight = Flight;
-    tourpackage.Transport = Transport;
-    tourpackage.Food = Food;
-    tourpackage.Hotel = Hotel;
-    tourpackage.Country = Country;
-    await this.TourpackageRepo.update({Id},{...tourpackage})
-    return res
-      .status(HttpStatus.OK)
-      .send({
-        status: 'success',
-        message: 'Travel package has updated successfully',
-      });
+  },
+})
+async updateTravelPackage(
+  @UploadedFiles()
+  file: {
+    coverimageurl?: Express.Multer.File[]
+  },
+  @Req() req: Request,
+  @Body() body,
+  @Param('Id') Id: string,
+  @Res() res: Response,
+) {
+  const {
+    MainTitle,
+    SubTitle,
+    Price,
+    City,
+    Discount,
+    Location,
+    Availability,
+    StartDate,
+    EndDate,
+    TripType,
+    TotalDuration,
+    PackageOverview,
+    Showpackage,
+    Flight,
+    Transport,
+    Food,
+    Hotel,
+    Country,
+    AvailableSeats,
+    MinimumAge,
+    MaximumAge,
+  } = req.body;
+  let coverimageurl = null;
+  if (file.coverimageurl && file.coverimageurl.length > 0) {
+    coverimageurl = await this.s3service.Addimage(file.coverimageurl[0]);
   }
+  const tourpackage = await this.TourpackageRepo.findOne({ where: { Id } });
+  if (!tourpackage) {
+    return res.status(HttpStatus.NOT_FOUND).send({
+      status: 'error',
+      message: 'Travel package not found',
+    });
+  }
+  tourpackage.coverimageurl = coverimageurl;
+  tourpackage.MainTitle = MainTitle;
+  tourpackage.SubTitle = SubTitle;
+  tourpackage.Price = Price;
+  tourpackage.City = City;
+  tourpackage.Discount = Discount;
+  tourpackage.Location = Location;
+  tourpackage.Availability = Availability;
+  tourpackage.StartDate = StartDate;
+  tourpackage.EndDate = EndDate;
+  tourpackage.TripType = TripType;
+  tourpackage.TotalDuration = TotalDuration;
+  tourpackage.AvailableSeats = AvailableSeats;
+  tourpackage.MinimumAge = MinimumAge;
+  tourpackage.MaximumAge = MaximumAge;
+  tourpackage.PackageOverview = PackageOverview;
+  tourpackage.Showpackage = Showpackage;
+  tourpackage.Flight = Flight;
+  tourpackage.Transport = Transport;
+  tourpackage.Food = Food;
+  tourpackage.Hotel = Hotel;
+  tourpackage.Country = Country;
+  await this.TourpackageRepo.save(tourpackage); // Use save() instead of update()
+  return res.status(HttpStatus.OK).send({
+    status: 'success',
+    message: 'Travel package has been updated successfully',
+  });
+}
+
 
   async AddNewInstallment(
     Id: string,
@@ -302,7 +308,7 @@ export class TourpackageController {
   }
 
   @Get(':Id')
-  async findOne(@Param('Id: string') Id: string) {
+  async findOne(@Param('Id') Id: string) {
     const getTourPackage = await this.tourpackageService.findOne(Id); // Use camelCase for variable names
     if (!getTourPackage) {
       throw new HttpException(
