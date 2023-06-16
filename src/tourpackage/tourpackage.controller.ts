@@ -1,3 +1,4 @@
+import { AlbumImage } from 'src/tourpackage/entities/albumimage.entity';
 
 import { CreateInstallmentDto } from './dto/create-installment.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, ParseFilePipeBuilder, HttpStatus, Req, Res, ParseFilePipe, FileTypeValidator, HttpException, Logger, UploadedFile, Query, Put } from '@nestjs/common';
@@ -6,7 +7,6 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestj
 import { Request, Response } from 'express';
 import { Tourpackage } from './entities/tourpackage.entity';
 import { Repository } from 'typeorm';
-import { AlbumImage } from './entities/albumimage.entity';
 import { VisitedPlace } from './entities/visitedplace.entity';
 import { CreateBookingPolicyDto } from './dto/creat-bookingpolicy.dto';
 import { updateBookingPolicyDto } from './dto/update-bookingpolicy.dto';
@@ -809,36 +809,121 @@ async updatetourpackagehighlight(
     });
   }
 
-  @Patch(':Id/albumimage/:AlbumId')
+  // @Patch(':Id/albumimage/:AlbumId')
+  // @UseInterceptors(FilesInterceptor('albumImageUrl', 20))
+  // async updateAlbumImageUrl(
+  //   @UploadedFiles()
+  //   files: Express.Multer.File[],
+  //   @Param('Id') Id: string,
+  //   @Param('AlbumId') AlbumId: number,
+  //   @Body() bodyParser,
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  // ) {
+  //   for (const file of files) {
+  //     const albumImageUrl = await this.s3service.updateAlbumImage(
+  //       Id,
+  //       AlbumId,
+  //       file,
+  //     );
+  //     const albumImage = new AlbumImage();
+  //     albumImage.albumImageUrl = albumImageUrl;
+  //     // this is necessary when only one object is passed
+  //     // await this.TourpackageRepo.update(Id,tourpackage)
+  //     //for multiple object but both will work
+  //     await this.AlbumimageRepo.update(AlbumId, albumImage);
+  //   }
+
+  //   return res.status(HttpStatus.OK).json({
+  //     status: 'success',
+  //     message: `Album Image has updated successfully`,
+  //   });
+  // }
+
+
+
+  @Post(':Id/UpdatealbumImage')
   @UseInterceptors(FilesInterceptor('albumImageUrl', 20))
-  async updateAlbumImageUrl(
-    @UploadedFiles()
-    files: Express.Multer.File[],
+  async updateAlbumImage(
+    @UploadedFiles() files: Express.Multer.File[],
     @Param('Id') Id: string,
-    @Param('AlbumId') AlbumId: number,
-    @Body() bodyParser,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    for (const file of files) {
-      const albumImageUrl = await this.s3service.updateAlbumImage(
-        Id,
-        AlbumId,
-        file,
+    const tourpackage = await this.TourpackageRepo.findOne({ where: { Id }, relations: ['albumImages'] });
+    if (!tourpackage) {
+      throw new HttpException(
+        "TourPackage not found, cannot update album image",
+        HttpStatus.BAD_REQUEST,
       );
-      const albumImage = new AlbumImage();
-      albumImage.albumImageUrl = albumImageUrl;
-      // this is necessary when only one object is passed
-      // await this.TourpackageRepo.update(Id,tourpackage)
-      //for multiple object but both will work
-      await this.AlbumimageRepo.update(AlbumId, albumImage);
     }
-
-    return res.status(HttpStatus.OK).json({
+  
+    // Delete existing album images (if needed)
+    await this.AlbumimageRepo.delete({ tourpackage: { Id } });
+  
+    const albumImages: AlbumImage[] = [];
+  
+    for (const file of files) {
+      const albumImageUrl = await this.s3service.Addimage(file);
+      const newAlbumImage = new AlbumImage();
+      newAlbumImage.albumImageUrl = albumImageUrl;
+      newAlbumImage.AlbumTitle = req.body.AlbumTitle;
+      newAlbumImage.tourpackage = tourpackage;
+      albumImages.push(newAlbumImage);
+    }
+  
+    // Save all new album images at once
+    await this.AlbumimageRepo.save(albumImages);
+  
+    return res.status(HttpStatus.OK).send({
       status: 'success',
-      message: `Album Image has updated successfully`,
+      message: 'Album Images Updated Successfully',
     });
   }
+
+
+  
+  @Post(':Id/Updatemainimage')
+  @UseInterceptors(FilesInterceptor('MainImageUrl', 20))
+  async updatemainimage(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('Id') Id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const tourpackage = await this.TourpackageRepo.findOne({ where: { Id }, relations: ['mainimage'] });
+    if (!tourpackage) {
+      throw new HttpException(
+        "TourPackage not found, cannot update album image",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  
+    // Delete existing album images (if needed)
+    await this.MainImageRepo.delete({ tourpackage: { Id } });
+  
+    const albumImages: MainImage[] = [];
+  
+    for (const file of files) {
+      const mainimageurl = await this.s3service.Addimage(file);
+      const newAlbumImage = new MainImage();
+      newAlbumImage.MainImageUrl = mainimageurl;
+      newAlbumImage.MainImageTitle = req.body.AlbumTitle;
+      newAlbumImage.tourpackage = tourpackage;
+      albumImages.push(newAlbumImage);
+    }
+  
+    // Save all new album images at once
+    await this.MainImageRepo.save(albumImages);
+  
+    return res.status(HttpStatus.OK).send({
+      status: 'success',
+      message: 'main image Updated Successfully',
+    });
+  }
+  
+  
+
 
   @Patch(':Id/mainimage/:mainimgId')
   @UseInterceptors(FilesInterceptor('MainImageUrl', 20))

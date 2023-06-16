@@ -19,11 +19,11 @@ export class BookingController {
     private readonly bookingService: BookingService,
   ) {}
 
-  @Post(':Id/addbooking')
+  @Post(':Id/book/:uuid')
   async addbooking(
     @Body() bookingDto: CreateBookingDto,
     @Param('Id') Id: string,
-    uuid: string,
+    @Param('uuid') uuid: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

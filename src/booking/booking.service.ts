@@ -24,7 +24,7 @@ export class BookingService {
       private UserRepository: Repository<User>,
    ) {}
 
-   async BookTravelpackage(Id:string, bookingDto: CreateBookingDto,Email:string ){
+   async BookTravelpackage(Id:string, bookingDto: CreateBookingDto,uuid:string ){
     const {travelers} =bookingDto
     const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
 
@@ -55,7 +55,7 @@ export class BookingService {
     }
     await this.tourPackageRepository.save(tourPackage);
     }
-    const userprofile = await this.UserRepository.findOne({ where: {Email}})
+    const userprofile = await this.UserRepository.findOne({ where: {uuid}})
     const arrayoftravlers =[]
     let TotalPrice:number = 0
     for(const traveler of travelers){
@@ -99,7 +99,7 @@ export class BookingService {
        userid:userprofile.uuid
     })
     const savebooking= await this.bookingRepository.save(newbooking)
-    await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
+    await this.sendBookingDetailsToUser(savebooking,userprofile.Email,arrayoftravlers);
     return savebooking;
  
  }
