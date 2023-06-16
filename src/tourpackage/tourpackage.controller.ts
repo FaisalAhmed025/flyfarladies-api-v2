@@ -235,7 +235,7 @@ async updateTravelPackage(
     MinimumAge,
     MaximumAge,
   } = req.body;
-  let coverimageurl = null;
+  let coverimageurl
   if (file.coverimageurl && file.coverimageurl.length > 0) {
     coverimageurl = await this.s3service.Addimage(file.coverimageurl[0]);
   }
