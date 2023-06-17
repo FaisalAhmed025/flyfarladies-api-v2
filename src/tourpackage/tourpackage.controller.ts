@@ -955,7 +955,6 @@ async updatetourpackagehighlight(
     });
   }
   
-  
 
 
   @Patch(':Id/mainimage/:mainimgId')

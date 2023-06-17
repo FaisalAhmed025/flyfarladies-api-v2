@@ -42,6 +42,8 @@ import { AskquestionModule } from './askquestion/askquestion.module';
 import { AskQuestion } from './askquestion/Entity/askquestion.entity';
 import { PresscoverageModule } from './presscoverage/presscoverage.module';
 import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { Subscription } from './subscription/entities/subscription.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
@@ -84,7 +86,8 @@ import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
         Installment,
         Booking,
         socialimageenity,
-        AskQuestion
+        AskQuestion,
+        Subscription,
       ],
       synchronize:false
 
@@ -102,6 +105,7 @@ import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
     oauthModule,
     AskquestionModule,
     PresscoverageModule,
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

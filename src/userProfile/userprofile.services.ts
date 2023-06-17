@@ -499,7 +499,7 @@ export class UserServices {
 
    // get All User
    async FindAllProfile() {
-      const Profile = await this.userRepository.find({});
+      const Profile = await this.userRepository.find({relations:[]});
       if (!Profile) {
          throw new HttpException("user Profile not found", HttpStatus.BAD_REQUEST);
       }

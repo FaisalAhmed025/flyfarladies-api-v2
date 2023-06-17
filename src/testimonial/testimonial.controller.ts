@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, HttpStatus, Req, Res, ParseFilePipeBuilder, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, HttpStatus, Req, Res, ParseFilePipeBuilder, HttpException, Put } from '@nestjs/common';
 import { TestimonialService } from './testimonial.service';
 import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,7 +27,7 @@ export class TestimonialController {
       { name: 'ClientImage', maxCount: 2 },
     ]),
   )
-  async givetestimonia(
+  async addtestimonial(
     @UploadedFiles()
     file: {
       testimonialimages?: Express.Multer.File[];
@@ -64,29 +64,69 @@ export class TestimonialController {
       .send({ status: 'success', message: 'testimonial created successfully' });
   }
 
-  // @Patch('update/:testid')
-  // @UseInterceptors(FileFieldsInterceptor([
-  //   { name: 'testimonialimages', maxCount: 1 },
-  //   { name: 'ClientImage', maxCount: 2 },
-  // ]))
-  // async updateimage(
-  //   @UploadedFiles()
-  //   file: {
-  //     testimonialimages?: Express.Multer.File[],
-  //     ClientImage?: Express.Multer.File[]},
-  //   @Req() req: Request,
-  //   @Param ('testid')testid:string,
-  //   @Body() body,
-  //   @Res() res: Response) {
-  //   const image1 = file.testimonialimages? await this.s3service.updatetestumonialIMages(testid,file.testimonialimages[0]):null
 
-  //   const ClientImage = file.ClientImage? await this.s3service.updatetestumonialIMages(testid,file.ClientImage[0]):null
-  //   const testimonial = new Testimonial();
-  //   if(image1) testimonial.testimonialimages =image1
-  //   if(ClientImage) testimonial.ClientImage
-  //   await this.TestimonialRepository.update({testid},{...testimonial})
-  //   return res.status(HttpStatus.OK).send({ status: "success", message: " image update successfully", })
-  // }
+  @Put(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'testimonialimages', maxCount: 10 },
+      { name: 'ClientImage', maxCount: 2 },
+    ]),
+  )
+  async updateTestimonial(
+    @UploadedFiles()
+    files: {
+      testimonialimages?: Express.Multer.File[];
+      ClientImage?: Express.Multer.File[];
+    },
+    @Req() req: Request,
+    @Body() body,
+    @Param('testid') testid: string,
+    @Res() res: Response,
+  ) {
+    const testimonial = await this.TestimonialRepository.findOne({where:{testid}});
+  
+    if (!testimonial) {
+      throw new HttpException(
+        'Testimonial not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  
+    const {
+      ClientName,
+      ClientDesignation,
+      CompanyName,
+      Description,
+    } = req.body;
+  
+    if (files.testimonialimages) {
+      const testimonialImages = [];
+      for (const image of files.testimonialimages) {
+        const imageUrl = await this.s3service.Addimage(image);
+        testimonialImages.push(imageUrl);
+      }
+      testimonial.testimonialimages = testimonialImages;
+    }
+    
+    if (files.ClientImage) {
+      const clientImage = await this.s3service.Addimage(files.ClientImage[0]);
+      testimonial.ClientImage = clientImage;
+    }
+
+    testimonial.ClientName = ClientName;
+    testimonial.ClientDesignation = ClientDesignation;
+    testimonial.CompanyName = CompanyName;
+    testimonial.Description = Description;
+    await this.TestimonialRepository.save(testimonial);
+  
+    return res
+      .status(HttpStatus.OK)
+      .send({ status: 'success', message: 'Testimonial updated successfully' });
+  }
+  
+
+
+
 
   @Get('alltestimonila')
   async findAll(@Res() res: Response) {
@@ -115,6 +155,7 @@ export class TestimonialController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.testimonialService.remove(id);
+    
   }
+
 }

@@ -90,6 +90,4 @@ export class PresscoverageController {
    .send({ status: 'success', message: 'press coverage has deleted' });
 
   }
-
-
 }
