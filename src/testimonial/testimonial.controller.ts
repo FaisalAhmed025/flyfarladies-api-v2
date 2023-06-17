@@ -65,7 +65,7 @@ export class TestimonialController {
   }
 
 
-  @Put(':id')
+  @Patch(':testid')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'testimonialimages', maxCount: 10 },
@@ -107,7 +107,7 @@ export class TestimonialController {
       }
       testimonial.testimonialimages = testimonialImages;
     }
-    
+
     if (files.ClientImage) {
       const clientImage = await this.s3service.Addimage(files.ClientImage[0]);
       testimonial.ClientImage = clientImage;
