@@ -1,5 +1,5 @@
 import { IsEmail } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 
 
@@ -10,4 +10,7 @@ export class Subscription {
    @IsEmail()
    @Column()
    Email:string
+   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+   public Date: Date;
+  
 }

@@ -26,7 +26,7 @@ export class SubscriptionController {
       .status(HttpStatus.OK)
       .send({
         status: 'success',
-        message: 'Thans for subscription',
+        message: 'thanks for subscription',
       });
   }
 

@@ -62,7 +62,7 @@ export class userProfileController {
     await this.UserServices.Register(userDto);
     return res
       .status(HttpStatus.CREATED)
-      .json({ status: 'success', message: 'user register successfully' });
+      .json({ status: 'success', message: 'registration successfull' });
   }
   @ApiTags('User Auth Module')
   @Post('login')
@@ -75,7 +75,7 @@ export class userProfileController {
     const token = await this.UserServices.login(Email, Password);
     return res.status(HttpStatus.CREATED).json({
       status: 'success',
-      message: 'user login successfully',
+      message: 'login successfull',
       jwtToken: token,
     });
   }
@@ -118,7 +118,7 @@ export class userProfileController {
     await this.UserRepository.update({ uuid }, { ...userprofile });
     return res.status(HttpStatus.CREATED).json({
       status: 'success',
-      message: 'user Profile updated successfully',
+      message: 'user profile updated successfully',
     });
   }
   @Patch('updateprofile/:uuid')

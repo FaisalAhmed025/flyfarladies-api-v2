@@ -44,6 +44,8 @@ import { PresscoverageModule } from './presscoverage/presscoverage.module';
 import { PressCoverages } from './presscoverage/entities/presscoverage.entity';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { Subscription } from './subscription/entities/subscription.entity';
+import { LedgerModule } from './ledger/ledger.module';
+import { Ledger } from './ledger/entities/ledger.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
@@ -88,9 +90,9 @@ import { Subscription } from './subscription/entities/subscription.entity';
         socialimageenity,
         AskQuestion,
         Subscription,
+        Ledger,
       ],
-      synchronize:false
-
+      synchronize:true
 
     }),
     UserModule,
@@ -106,6 +108,7 @@ import { Subscription } from './subscription/entities/subscription.entity';
     AskquestionModule,
     PresscoverageModule,
     SubscriptionModule,
+    LedgerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
