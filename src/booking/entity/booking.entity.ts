@@ -1,7 +1,8 @@
 
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
+import { Ledger } from 'src/ledger/entities/ledger.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, Repository, getConnection } from 'typeorm';
+import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, Repository, getConnection, JoinColumn, OneToMany } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum BookingStatus {
@@ -67,4 +68,6 @@ export class Booking{
    public Created_At: Date;
    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
    public Updated_At: Date;
+   @OneToMany(() => Ledger, ledger => ledger.booking)
+   ledger: Ledger[];
 }

@@ -30,7 +30,7 @@ export class BookingController {
     await this.bookingService.BookTravelpackage(Id, bookingDto, uuid);
     return res
       .status(HttpStatus.OK)
-      .send({ status: 'success', message: 'Booking sucessfull' });
+      .send({ status: 'success', message: 'booking sucessfull' });
   }
 
 

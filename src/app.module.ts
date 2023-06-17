@@ -92,7 +92,7 @@ import { Ledger } from './ledger/entities/ledger.entity';
         Subscription,
         Ledger,
       ],
-      synchronize:true
+      synchronize:false
 
     }),
     UserModule,
