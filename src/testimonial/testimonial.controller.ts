@@ -123,6 +123,16 @@ export class TestimonialController {
       .status(HttpStatus.OK)
       .send({ status: 'success', message: 'Testimonial updated successfully' });
   }
+
+  @Delete(':testid')
+ async Delete(@Param('testid') testid: string,
+ @Res() res: Response,) {
+    await this.TestimonialRepository.delete(testid);
+    return res
+    .status(HttpStatus.OK)
+    .send({ status: 'success', message: 'Testimonial has deleted' });
+    
+  }
   
 
 
