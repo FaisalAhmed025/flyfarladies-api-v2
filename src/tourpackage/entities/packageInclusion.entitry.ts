@@ -10,7 +10,7 @@ export class Packageinclusion {
   @IsNotEmpty()
   @Column({length: 1000})
   Inclusions:string
-  @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.PackageInclusions)
+  @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.PackageInclusions,{onDelete:'CASCADE'})
   @JoinColumn({name:'inclusionId'})
   tourpackage:Tourpackage
 

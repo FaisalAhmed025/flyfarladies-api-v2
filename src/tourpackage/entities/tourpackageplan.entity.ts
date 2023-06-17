@@ -11,7 +11,7 @@ export class tourpackageplan {
   dayplan: string;
   @Column()
   Title:string
-  @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.tourpackageplans)
+  @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.tourpackageplans,{onDelete:'CASCADE'})
   @JoinColumn({ name: 'Tour_package_plan' })
   tourpackage:Tourpackage
  

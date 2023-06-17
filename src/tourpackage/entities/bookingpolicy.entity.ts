@@ -10,7 +10,7 @@ export class bookingpolicy {
     @IsNotEmpty()
     @Column({length: 1000})
     description:string;
-    @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.BookingPolicys)
+    @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.BookingPolicys,{onDelete:'CASCADE'})
     @JoinColumn({name:'policyId'})
     tourpackage:Tourpackage
    

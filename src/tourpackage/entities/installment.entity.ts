@@ -12,6 +12,6 @@ export class Installment {
   Date: string;
   @Column({nullable:true})
   Amount: number;
-  @ManyToOne(() => Tourpackage, (tourpackage) => tourpackage.installments)
+  @ManyToOne(() => Tourpackage, (tourpackage) => tourpackage.installments,{onDelete:'CASCADE'})
   tourpackage: Tourpackage
 }

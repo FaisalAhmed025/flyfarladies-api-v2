@@ -9,7 +9,7 @@ export class VisitedPlace{
    VimageId:number
    @Column({default:true})
    VisitedImagePath: string;
-   @ManyToOne(() => Tourpackage, tourpackage=>tourpackage.vistitedImages)
+   @ManyToOne(() => Tourpackage, tourpackage=>tourpackage.vistitedImages,{onDelete:'CASCADE'})
    @JoinColumn({name:'visited image'})
    tourpackage:Tourpackage;
 }

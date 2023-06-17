@@ -10,7 +10,7 @@ export class MainImage{
    MainImageTitle: string;
    @Column({default:true})
    MainImageUrl: string;
-   @ManyToOne(() => Tourpackage, tourpackage=>tourpackage.mainimage)
+   @ManyToOne(() => Tourpackage, tourpackage=>tourpackage.mainimage,{onDelete:'CASCADE'})
    tourpackage:Tourpackage;
    
 }
