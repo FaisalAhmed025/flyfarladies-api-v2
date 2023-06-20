@@ -51,7 +51,7 @@ export class BankTransfer{
    rejectionReason:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
-   @ManyToOne(()=>User, (userprofile)=>userprofile.bankDeposit)
+   @ManyToOne(()=>User, (userprofile)=>userprofile.bankDeposit,{onDelete:'CASCADE'})
    @JoinColumn({name:'user_Id',})
    userprofile:User
 }

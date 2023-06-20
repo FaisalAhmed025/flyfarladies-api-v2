@@ -42,7 +42,7 @@ export class Cheque{
    ActionBy:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
-   @ManyToOne(()=>User, (userprofile)=>userprofile.chequeDeposit)
+   @ManyToOne(()=>User, (userprofile)=>userprofile.chequeDeposit,{onDelete:'CASCADE'})
    @JoinColumn({name:'BankId'})
    userprofile:User
 }

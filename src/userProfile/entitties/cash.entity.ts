@@ -19,7 +19,7 @@ export class Cash{
    DepositType:string
    @Column()
    cashattachmenturl:string
-   @ManyToOne(()=>User, (userprofile)=>userprofile.cashDeposit)
+   @ManyToOne(()=>User, (userprofile)=>userprofile.cashDeposit,{onDelete:'CASCADE'})
    @JoinColumn({name:'cash_Id'})
    userprofile:User
 

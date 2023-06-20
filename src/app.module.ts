@@ -46,20 +46,22 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { Subscription } from './subscription/entities/subscription.entity';
 import { LedgerModule } from './ledger/ledger.module';
 import { Ledger } from './ledger/entities/ledger.entity';
+import { SslpaymentgatwayModule } from './sslpaymentgatway/sslpaymentgatway.module';
+import { SSLCommerzEntity } from './sslpaymentgatway/entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username:"flyfarin_fflv2",
-      password: "123Next2$",
-      host: "flyfarint.com",
-      database:"flyfarin_fflv2",
+      // username:"flyfarin_fflv2",
+      // password: "123Next2$",
+      // host: "flyfarint.com",
+      // database:"flyfarin_fflv2",
 
-      // username:'root',
-      // password:'',
-      // host: '127.0.0.1',
-      // database:'flyfarladies',
+      username:'root',
+      password:'',
+      host: '127.0.0.1',
+      database:'flyfarladies',
 
       port:3306,
       entities: [Admin,
@@ -91,6 +93,8 @@ import { Ledger } from './ledger/entities/ledger.entity';
         AskQuestion,
         Subscription,
         Ledger,
+        SSLCommerzEntity
+     
       ],
       synchronize:false
 
@@ -109,6 +113,8 @@ import { Ledger } from './ledger/entities/ledger.entity';
     PresscoverageModule,
     SubscriptionModule,
     LedgerModule,
+    SslpaymentgatwayModule,
+    SSLCommerzEntity
   ],
   controllers: [AppController],
   providers: [AppService],
