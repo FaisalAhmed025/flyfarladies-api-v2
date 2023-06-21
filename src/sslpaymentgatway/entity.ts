@@ -1,18 +1,32 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
+
+export enum SSLpaymentStatus {
+  VALID = 'VALID',
+  VALIDATED = 'VALIDATED',
+  REJECTED = 'rejected',
+}
+
 @Entity()
 export class SSLCommerzEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
+  @Column()
+  cus_name: string;
+  @Column()
+  cus_email: string;
+  @Column()
+  cus_phone: string;
   @Column()
   tran_id: string;
-
   @Column()
-  amount: number;
-
+  card_no: string;
+  @Column()
+  total_amount: number;
   @Column()
   currency: string;
+  @Column()
+  error: string;
   @Column()
   val_id: string;
   @Column()
@@ -29,8 +43,26 @@ export class SSLCommerzEntity {
   card_brand: string;
   @Column()
   card_issuer_country: string;
+  // @Column()
+  // card_issuer:string
+  // @Column()
+  // store_id:string
+  // @Column()
+  // verify_sign:string
+  // @Column()
+  // currency_amount:string
+  // @Column()
+  // currency_rate:string
+  // @Column()
+  value_a:string
   @Column()
-  sessionKey:string
+  value_b:string
+  @Column()
+  value_c:string
+  // @Column()
+  // risk_title:string
+  @Column({ type: 'enum', enum: SSLpaymentStatus, default: SSLpaymentStatus.VALID })
+  paymentstatus:SSLpaymentStatus
   
 
   // Add more fields as per your requirements
@@ -46,7 +78,5 @@ export class SSLCommerzPayment {
      public store_passwd: string,
      public live = false,
    ) {}
-
-
 
 }
