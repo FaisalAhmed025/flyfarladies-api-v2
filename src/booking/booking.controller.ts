@@ -30,18 +30,19 @@ export class BookingController {
     await this.bookingService.BookTravelpackage(Id, bookingDto, uuid);
     return res
       .status(HttpStatus.OK)
-      .send({ status: 'success', message: 'booking sucessfull' });
+      .send({ status: 'success', message: 'booking sucessfull',});
   }
 
 
   @Post(':bookingId/confirm-with-installment')
   async confirmBookingWithInstallment(
     @Param('Bookingid') Bookingid: string,
-    uuid: string,
+    @Param('uuid') uuid: string,
+    @Body('installmentId') installmentId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    await this.bookingService.confirmBookingWithInstallment(Bookingid, uuid);
+    await this.bookingService.confirmBookingWithInstallment(Bookingid,installmentId,uuid);
     return res
       .status(HttpStatus.OK)
       .send({ status: 'success', message: 'Payment Successfull' });
@@ -80,13 +81,14 @@ export class BookingController {
   async RejectdAdmin(
     @Param('Bookingid') Bookingid: string,
     @Body('uuid') uuid: string,
+    @Body('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    await this.bookingService.Cancelledbookingbyadmin(Bookingid, uuid,req.body);
+    await this.bookingService.Cancelledbookingbyadmin(Bookingid,uuid,Id,req.body);
     return res
       .status(HttpStatus.OK)
-      .send({ status: 'success', message: 'Booking Cancelled, waiting for' });
+      .send({ status: 'success', message: 'Booking Cancelled' });
   }
 
   
@@ -94,21 +96,20 @@ export class BookingController {
   async cancelbyuser(
     @Param('Bookingid') Bookingid: string,
     @Body('uuid') uuid: string,
+    @Body('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    await this.bookingService.Cancelledbookingbyuser(Bookingid, uuid,req.body);
+    await this.bookingService.Cancelledbookingbyuser(Bookingid,uuid,Id,req.body,);
     return res
       .status(HttpStatus.OK)
       .send({ status: 'success', message: 'Booking Cancelled,please wait for refund' });
   }
 
-
   @Get(':Bookingid')
   async getBooking(@Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid);
   }
-
 
   @Get(':userid/getall/mybookings')
   async MyAllBookings(@Param('userid') userid: string) {

@@ -8,6 +8,7 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer'
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Payement } from './entity/payement.entity';
+import { Installment, InstallmentStatus } from 'src/tourpackage/entities/installment.entity';
 var converter = require('number-to-words');
 
 @Injectable()
@@ -22,8 +23,12 @@ export class BookingService {
       private PayementRepository: Repository<Payement>,
       @InjectRepository(User)
       private UserRepository: Repository<User>,
+      @InjectRepository(Installment)
+      private InstallmentRepo: Repository<Installment>,
    ) {}
 
+
+   
    async BookTravelpackage(Id:string, bookingDto: CreateBookingDto,uuid:string ){
     const {travelers} =bookingDto
     const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
@@ -81,67 +86,84 @@ export class BookingService {
        );  
       } 
     }
-
-
-    const newbooking = await this.bookingRepository.create({
-       tourPackage,
-       travelers: arrayoftravlers,
-       TotalPrice:TotalPrice,
-       Email:userprofile.Email,
-       Name:userprofile.Name,
-       Wallet:userprofile.Wallet,
-       Mobile:userprofile.Mobile,
-       WhatsApp:userprofile.WhatsApp,
-       FaceBookId:userprofile.FaceBookId,
-       LinkedIn:userprofile.LinkedIn,
-       MainTitle:tourPackage.MainTitle,
-       SubTitle:tourPackage.SubTitle,
-       userid:userprofile.uuid
-    })
+    const newbooking = new Booking(); // Create a new booking entity
+    newbooking.tourPackage = tourPackage; // Assign the tourPackage to the booking
+    newbooking.travelers = arrayoftravlers;
+    newbooking.TotalPrice = TotalPrice;
+    newbooking.Email = userprofile.Email;
+    newbooking.Name = userprofile.Name;
+    newbooking.Wallet = userprofile.Wallet;
+    newbooking.Mobile = userprofile.Mobile;
+    newbooking.WhatsApp = userprofile.WhatsApp;
+    newbooking.FaceBookId = userprofile.FaceBookId;
+    newbooking.LinkedIn = userprofile.LinkedIn;
+    newbooking.MainTitle = tourPackage.MainTitle;
+    newbooking.SubTitle = tourPackage.SubTitle;
+    newbooking.userid = userprofile.uuid;
+    newbooking.Totalseat= travelers.length,
+    newbooking.packageId=tourPackage.Id
     const savebooking= await this.bookingRepository.save(newbooking)
+    for (let i = 0; i < 3; i++) {
+      const installment = new Installment();
+      installment.TotalAmount = TotalPrice; 
+      const installmentAmount = TotalPrice / 3;
+      installment.booking = savebooking;
+      installment.Amount = installmentAmount;
+      installment.InstallmentId = i + 1; // Set the installment number
+      await this.InstallmentRepo.save(installment);
+    }
     await this.sendBookingDetailsToUser(savebooking,userprofile.Email,arrayoftravlers);
     return savebooking;
  
  }
-
-   async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
-    const booking = await this.bookingRepository.findOne({where:{Bookingid}})
-    const tourPackageId = booking.packageId
-    const installmentCount =3
-    const installmentAmount = booking.TotalPrice/installmentCount
-    const user = await this.UserRepository.findOne({where:{uuid}})
-  
-    if (user.Wallet < booking.TotalPrice) {
-      throw new HttpException('Insufficient funds in wallet.',HttpStatus.BAD_REQUEST);
-    }
-    const lastPayment = await this.PayementRepository.createQueryBuilder('payment')
-      .where('payment.uuid = :uuid', { uuid })
-      .andWhere('payment.tourPackageId = :tourPackageId', { tourPackageId })
-      .orderBy('payment.installmentId', 'DESC')
-      .getOne();
-  
-    let nextInstallmentId = 1;
-    if (lastPayment) {
-      if (lastPayment.installmentId >= installmentCount) {
-        throw new Error('All installments have been paid for this booking.');
-      }
-      nextInstallmentId = lastPayment.installmentId + 1;
-    }
-  
-    for (let i = nextInstallmentId; i <= installmentCount; i++) {
-      user.Wallet -= installmentAmount;
-      const payment = new Payement();
-      payment.uuid = uuid;
-      payment.tourPackageId = tourPackageId;
-      payment.installmentId = i;
-      payment.amount = installmentAmount;
-      await this.PayementRepository.save(payment);
-    }
-    user.Wallet = Math.round(user.Wallet * 100) / 100;
-    await this.UserRepository.save(user);
-    booking.status =BookingStatus.ISSUE_IN_PROCESS
-    await this.bookingRepository.save(booking);
+ async confirmBookingWithInstallment(Bookingid: string, installmentId: number, uuid: string) {
+  const booking = await this.bookingRepository.findOne({where:{Bookingid}, relations: ['installments', 'tourPackage'] }, );
+  if (!booking) {
+    throw new HttpException('Booking not found', HttpStatus.BAD_REQUEST);
   }
+
+  const installment = (await booking.tourPackage.installments).find(installment => installment.InstallmentId === installmentId);
+  if (!installment) {
+    throw new  HttpException('Installment not found',HttpStatus.BAD_REQUEST,);
+  }
+  // Check user's wallet balance
+  const user = await this.UserRepository.findOne({where:{uuid}});
+  if (!user) {
+    throw new HttpException('User not found',HttpStatus.BAD_REQUEST,);
+  }
+
+  const totalPayment = installment.Amount
+  if (user.Wallet < totalPayment) {
+    throw new HttpException('Insufficient wallet balance',HttpStatus.BAD_REQUEST,);
+  }
+
+  user.Wallet -= totalPayment;
+  installment.status =InstallmentStatus.PAID
+  await this.InstallmentRepo.save(installment)
+  await this.UserRepository.save(user);
+  const installmentIndex = booking.installments.findIndex(installment => installment.InstallmentId === installmentId);
+  const nextInstallment = booking.installments[installmentIndex + 1];
+  if (nextInstallment && nextInstallment.status !== InstallmentStatus.PENDING) {
+    throw new HttpException('The next installment is not available for payment',HttpStatus.BAD_REQUEST);
+  }
+
+  if (installmentIndex === booking.installments.length - 1 && installment.status === InstallmentStatus.PAID) {
+    booking.status = BookingStatus.APPROVED;
+  }
+   else {
+    booking.status = BookingStatus.PARTIAL;
+  }
+  
+  await this.bookingRepository.save(booking);
+  if(booking.status === BookingStatus.APPROVED){
+    throw new HttpException('Your Booking is Confirmed',HttpStatus.BAD_REQUEST);
+  }
+
+  const remainingAmount = user.Wallet;
+  return { totalPayment, remainingAmount };
+}
+
+
   
 
    async sendBookingDetailsToUser(booking: Booking,Email:string, travelers: Traveller[] ) {
@@ -946,20 +968,21 @@ export class BookingService {
       }
 
       
-    async Cancelledbookingbyadmin(Bookingid: string, uuid:string, @Body()body: any): Promise<void>{
+    async Cancelledbookingbyadmin(Bookingid: string, uuid:string, Id:string, @Body()body: any): Promise<void>{
         // Find the booking object with the provided ID
         const booking = await this.bookingRepository.findOne({where:{Bookingid}});
-        if(booking.status!== BookingStatus.ISSUE_IN_PROCESS)
-        {
-           throw new NotFoundException('Booking request already approved or Rejected');
-        }
+        // if(booking.status!== BookingStatus.ISSUE_IN_PROCESS && booking.status!== BookingStatus.HOLD)
+        // {
+        //    throw new NotFoundException('Booking request already approved or Rejected');
+        // }
         // Update the booking status to approved
         const profile = await this.UserRepository.findOne({ where: {uuid} });
         if (!profile) {
            throw new NotFoundException('user not found');
         }
 
-        if(booking.status === BookingStatus.ISSUE_IN_PROCESS){
+        const tourpackage = await this.tourPackageRepository.findOne({where:{Id}})
+        if(booking.status === BookingStatus.ISSUE_IN_PROCESS || booking.status== BookingStatus.HOLD){
           booking.UpdatedAt = new Date()
           booking.status = BookingStatus.CANCELLED;
           booking.CancelledReason =` Reject Due to ${body.CancelledReason}`;
@@ -970,6 +993,9 @@ export class BookingService {
           if (!body.ActionBy) {
             throw new NotFoundException('ActionBy');
           }
+          if(tourpackage.Id == booking.packageId)
+          tourpackage.AvailableSeats+=booking.Totalseat
+          await this.tourPackageRepository.save(tourpackage)
           await this.bookingRepository.save(booking);
           // await this.sendBookingApprovalToUser(updatedBooking);
         }
@@ -979,27 +1005,31 @@ export class BookingService {
         
       }
 
-        
-    async Cancelledbookingbyuser(Bookingid: string, uuid:string, @Body() body: any): Promise<void>{
+    async Cancelledbookingbyuser(Bookingid: string, uuid:string,Id:string, @Body() body: any): Promise<void>{
       // Find the booking object with the provided ID
       const booking = await this.bookingRepository.findOne({where:{Bookingid}});
-      if(booking.status!== BookingStatus.ISSUE_IN_PROCESS)
-      {
-         throw new NotFoundException('Booking request already approved or Rejected');
-      }
+      // if(booking.status== BookingStatus.ISSUE_IN_PROCESS)
+      // {
+      //    throw new NotFoundException('Booking request already approved or Rejected');
+      // }
       // Update the booking status to approved
+      
+      const tourpackage = await this.tourPackageRepository.findOne({where:{Id}})
       const profile = await this.UserRepository.findOne({ where: {uuid} });
       if (!profile) {
          throw new NotFoundException('user not found');
       }
 
-      if(booking.status === BookingStatus.ISSUE_IN_PROCESS){
+      if(booking.status === BookingStatus.ISSUE_IN_PROCESS || booking.status === BookingStatus.HOLD){
         booking.UpdatedAt = new Date()
         booking.status = BookingStatus.CANCELLED;
         booking.CancelledReason =` Reject Due to ${body.CancelledReason}`;
         if (!body.CancelledReason) {
           throw new NotFoundException('CancelledReason');
         }
+        if(tourpackage.Id =booking.packageId)
+        tourpackage.AvailableSeats+=booking.Totalseat
+        await this.tourPackageRepository.update({Id},{...tourpackage})
         await this.bookingRepository.save(booking);
         // await this.sendBookingApprovalToUser(updatedBooking);
       }
@@ -1008,7 +1038,6 @@ export class BookingService {
      }
       
     }
-
     
    async MakePayementwitInatallemnt(Bookingid: string, uuid:string,
     Email:string,): Promise<void>{
@@ -1017,7 +1046,6 @@ export class BookingService {
       {
          throw new NotFoundException('Booking request already approved or Rejected');
       }
-
       const tourpackage = await this.bookingRepository.findOne({where:{Bookingid}, relations:['tourPackage']})
       // Update the booking status to approved
       const profile = await this.UserRepository.findOne({ where: {uuid} });

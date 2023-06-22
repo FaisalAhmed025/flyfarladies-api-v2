@@ -5,9 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SSLCommerzEntity, SSLpaymentStatus } from './entity';
 import { Repository } from 'typeorm';
 const SSLCommerzPayment = require('sslcommerz-lts')
-import { v4 as uuidv4 } from 'uuid';
 import { createHash } from 'crypto';
-import { Booking } from 'src/booking/entity/booking.entity';
+import { Booking, BookingStatus } from 'src/booking/entity/booking.entity';
 import { User } from 'src/userProfile/entitties/user.entity';
 
 
@@ -31,7 +30,7 @@ export class SslpaymentgatwayController {
   async init(
   @Param('uuid') uuid:string,
   @Param('Bookingid') Bookingid:string,
-  @Req() req: Request): Promise<{  url?: string }> {
+  @Req() req: Request): Promise<{  checkoutpageurl?: string }> {
 
     const booking = await this.BookingRepository.findOne({where:{Bookingid}})
     if (!booking) {
@@ -44,11 +43,12 @@ export class SslpaymentgatwayController {
     const transactionId = this.generateCustomTransactionId();
 
     const data ={ 
-    store_id: " flyfa61361258eb3e1",
-    store_passwd: "flyfa61361258eb3e1@ssl",
+    store_id: process.env.SSL_STORE_ID,
+    store_passwd: process.env.SSL_STORE_PASSWORD,
     total_amount:booking.TotalPrice ,
     currency: "BDT",
     tran_id: transactionId,
+    tran_date:Date(),
     success_url: `http://localhost:5000/sslpaymentgatway/success/${transactionId}`,
     fail_url:   ` http://localhost:5000/sslpaymentgatway/failure/${transactionId}`,
     cancel_url: `http://localhost:5000/sslpaymentgatway/cancel/${transactionId}`,
@@ -68,11 +68,11 @@ export class SslpaymentgatwayController {
   }
     try {
    
-      const sslcz = new SSLCommerzPayment('flyfa61361258eb3e1', 'flyfa61361258eb3e1@ssl', false);
+      const sslcz = new SSLCommerzPayment( process.env.SSL_STORE_ID,  process.env.SSL_STORE_PASSWORD, false);
       const apiResponse = await sslcz.init(data);
       const gatewayPageURL = apiResponse.GatewayPageURL
       await this.sslcommerzRepository.save(data)
-      return {url:gatewayPageURL};
+      return {checkoutpageurl:gatewayPageURL};
     } catch (error) {
       throw new Error('Failed to initiate payment');
     }
@@ -82,20 +82,26 @@ export class SslpaymentgatwayController {
 async create(
   @Body() data: any,
   @Param('tran_id') tran_id: string,
-  @Req() req: Request
+  @Req() req: Request,
+  @Res() res: Response
+
 ): Promise<any> {
   try {
-    const xss = await this.sslcommerzRepository.findOne({where:{tran_id}});
-    if (!xss) {
+    const transaction = await this.sslcommerzRepository.findOne({where:{tran_id}});
+    if (!transaction) {
       return { message: 'Transaction ID not found', error: true };
     }
-
-    xss.paymentstatus = SSLpaymentStatus.VALIDATED;
-    await this.sslcommerzRepository.save(xss);
-    if(xss.paymentstatus === SSLpaymentStatus.VALIDATED){
-      return { message: 'Payment successful', data };
+    transaction.paymentstatus = SSLpaymentStatus.VALIDATED;
+    transaction.store_amount = data.store_amount
+    transaction.tran_date = data.tran_date
+    transaction.val_id = data.val_id
+    transaction.bank_tran_id = data.bank_tran_id
+    await this.sslcommerzRepository.save(transaction);
+    if(transaction.paymentstatus === SSLpaymentStatus.VALIDATED){
+     const message ='payment successfull'
+     const status ='success'
+     res.redirect(`https://flyfarladies.com/dashboard/profile?message=${encodeURIComponent(message)}&status=${encodeURIComponent(status)}`)
     }
-
 
   } catch (error) {
     console.error('Error processing payment callback:', error);
@@ -114,6 +120,7 @@ async failtransaction(
 
 }
 
+
 @Post('cancel/:tran_id')
 async CancellTransaction(
   @Body() data: any,
@@ -122,20 +129,19 @@ async CancellTransaction(
 ): Promise<any> {
    await this.sslcommerzRepository.delete({tran_id});
    return { message: 'Transaction Cancelled'};
-
 }
   
-  
 
-  @Get('/validate/:val_id')
-  async validate(@Param('val_id') val_id: string, @Req() req: Request): Promise<any> {
-    const data={
-      val_id: val_id
-    }
-    const sslcz = new SSLCommerzPayment('flyfa61361258eb3e1', 'flyfa61361258eb3e1@ssl', false);
-    const validationData = await sslcz.validate(data);
-    return validationData;
+
+@Get('/validate/:val_id')
+async validate(@Param('val_id') val_id: string, @Req() req: Request): Promise<any> {
+  const data={
+    val_id: val_id
   }
+  const sslcz = new SSLCommerzPayment(process.env.SSL_STORE_ID, process.env.SSL_STORE_PASSWORD,false);
+  const validationData = await sslcz.validate(data);
+  return validationData;
+}
   
 
   @Post('/initiate-refund')
@@ -150,7 +156,7 @@ async CancellTransaction(
       bank_tran_id:bank_tran_id,
       refe_id:refe_id,
   };
-    const sslcz = new SSLCommerzPayment('flyfa61361258eb3e1', 'flyfa61361258eb3e1@ssl', false);
+    const sslcz = new SSLCommerzPayment( process.env.SSL_STORE_ID, process.env.SSL_STORE_PASSWORD, false);
     try {
       const response = await sslcz.initiateRefund(data);
 
@@ -173,7 +179,7 @@ async CancellTransaction(
     const data = {
       refund_ref_id: refund_ref_id,
     };
-    const sslcz = new SSLCommerzPayment('flyfa61361258eb3e1', 'flyfa61361258eb3e1@ssl', false);
+    const sslcz = new SSLCommerzPayment( process.env.SSL_STORE_ID,  process.env.SSL_STORE_PASSWORD, false);
     try {
       const response = await sslcz.refundQuery(data);
       // Process the response received from SSLCommerz
@@ -192,7 +198,7 @@ async CancellTransaction(
     const data = {
       tran_id: trans_id,
     };
-    const sslcz = new SSLCommerzPayment('flyfa61361258eb3e1', 'flyfa61361258eb3e1@ssl', false);
+    const sslcz = new SSLCommerzPayment( process.env.SSL_STORE_ID,  process.env.SSL_STORE_PASSWORD, false);
     try {
       const response = await sslcz.transactionQueryByTransactionId(data);
       // Process the response received from SSLCommerz
@@ -211,7 +217,7 @@ async CancellTransaction(
     const data = {
       sessionkey: sessionkey,
     };
-    const sslcz = new SSLCommerzPayment('flyfa61361258eb3e1', 'flyfa61361258eb3e1@ssl', false);
+    const sslcz = new SSLCommerzPayment( process.env.SSL_STORE_ID, process.env.SSL_STORE_PASSWORD, false);
       const response = await sslcz.transactionQueryBySessionId(data);
       return response;
     } catch (error) {

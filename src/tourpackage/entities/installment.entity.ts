@@ -1,5 +1,13 @@
+import { Booking } from 'src/booking/entity/booking.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+
+
+export enum InstallmentStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  PAID = 'paid',
+}
 
 
 @Entity()
@@ -12,6 +20,12 @@ export class Installment {
   Date: string;
   @Column({nullable:true})
   Amount: number;
-  @ManyToOne(() => Tourpackage, (tourpackage) => tourpackage.installments,{onDelete:'CASCADE'})
+  @Column({nullable:true})
+  TotalAmount: number;
+  @Column({ default: InstallmentStatus.PENDING })
+  status: InstallmentStatus;
+  @ManyToOne(() => Tourpackage, (tourpackage) => tourpackage.installments,{onDelete:'CASCADE',onUpdate:'CASCADE'})
   tourpackage: Tourpackage
+  @ManyToOne(() => Booking, booking => booking.installments,{lazy:true, onDelete:'CASCADE', onUpdate:'CASCADE'})
+  booking: Booking;
 }

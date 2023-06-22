@@ -30,7 +30,7 @@ export class SSLCommerzEntity {
   @Column()
   val_id: string;
   @Column()
-  tran_date: Date;
+  tran_date: string;  
   @Column()
   status: string;
   @Column()

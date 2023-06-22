@@ -1,15 +1,19 @@
 
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { Ledger } from 'src/ledger/entities/ledger.entity';
+import { Installment } from 'src/tourpackage/entities/installment.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, Repository, getConnection, JoinColumn, OneToMany } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum BookingStatus {
    HOLD = 'hold',
+   APPROVED = 'approved',
    ISSUE_IN_PROCESS = 'issue in process',
    CONFIRMED = 'confirmed',
    CANCELLED = 'cancelled',
+   PARTIAL = 'partial',
+
  }
 
 let userCount = Math.floor(Math.random() * 10000);
@@ -70,4 +74,8 @@ export class Booking{
    public Updated_At: Date;
    @OneToMany(() => Ledger, ledger => ledger.booking)
    ledger: Ledger[];
+   @Column()
+   Totalseat: number;
+   @OneToMany(() => Installment, (installment) => installment.booking)
+   installments: Installment[];
 }

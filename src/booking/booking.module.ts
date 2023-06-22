@@ -8,10 +8,10 @@ import { BookingController } from './booking.controller';
 import { Booking } from './entity/booking.entity';
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Payement } from './entity/payement.entity';
-
+import { Installment } from 'src/tourpackage/entities/installment.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Tourpackage, Traveller, Booking,User, Payement]),S3Module],
+  imports:[TypeOrmModule.forFeature([Tourpackage, Traveller, Booking,User, Payement, Installment]),S3Module],
   controllers: [BookingController],
   providers: [BookingService]
 })
