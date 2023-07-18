@@ -11,7 +11,6 @@ import { JwtStrategy } from './jwt.strategy';
 
 @Module({
    imports: [TypeOrmModule.forFeature([Admin]),
-
    JwtModule.register({
       secret: jwtConstants.secret,
       signOptions:{expiresIn:'1d'},
