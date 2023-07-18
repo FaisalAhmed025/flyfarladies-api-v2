@@ -95,7 +95,7 @@ import { SSLCommerzEntity } from './sslpaymentgatway/entity';
         Ledger,
         SSLCommerzEntity
       ],
-      synchronize:false
+      synchronize:false,
 
     }),
     UserModule,
