@@ -30,7 +30,7 @@ export class GCSStorageService  {
             const serviceAccountKeyFile = 's3config.json';
             process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
             const storage = new Storage({ keyFilename: serviceAccountKeyFile });
-            const bucketName = 'cdnflyfarladies'; // Replace with your actual bucket name
+            const bucketName = 'cdnflyfarladiesv2'; // Replace with your actual bucket name
             const bucket = storage.bucket(bucketName);
             const fileName = `${file.originalname}.webp`;
             const modifiedName = fileName.replace(/\s+/g, '_');
