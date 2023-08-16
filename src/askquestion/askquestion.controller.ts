@@ -9,7 +9,6 @@ import { Request, Response } from 'express';
 export class AskquestionController {
   constructor( @InjectRepository(AskQuestion) private askQuestionRepository: Repository<AskQuestion>,
      private readonly askquestionService: AskquestionService) {}
-
      @Post('add')
      async addQuestion(
      @Body() body,

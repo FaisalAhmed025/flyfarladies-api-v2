@@ -1,5 +1,7 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
+
+//entity for  table creation
 @Entity()
 export class AskQuestion{
    @PrimaryGeneratedColumn('uuid')

@@ -74,7 +74,6 @@ export class BlogController {
     @Res() res: Response,
   ) {
     const { Title, Description, Blogfor, WrittenBy, Type } = req.body;
-  
     const blog = await this.BlogRepo.findOne({ where: { blogid } });
   
     if (file.blogimages) {

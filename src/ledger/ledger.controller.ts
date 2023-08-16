@@ -21,7 +21,6 @@ export class LedgerController {
     @InjectRepository(User) private userRepository:Repository <User>,
     @InjectRepository(MobileBanking) private MobileBankingRepository:Repository <MobileBanking>,
     @InjectRepository(BankTransfer) private BankTransferRepository:Repository <BankTransfer>,
-
     private readonly ledgerService: LedgerService) {}
     
 @Get(':uuid/userledger') 
